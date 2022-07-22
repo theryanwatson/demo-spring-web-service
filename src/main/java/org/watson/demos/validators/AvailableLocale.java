@@ -14,7 +14,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Constraint(validatedBy = AvailableLocaleValidator.class)
 public @interface AvailableLocale {
-    String message() default "{javax.validation.constraints.Locale.message}";
+    String message() default "{javax.validation.constraints.AvailableLocale.message}";
 
     Class<?>[] groups() default {};
 
