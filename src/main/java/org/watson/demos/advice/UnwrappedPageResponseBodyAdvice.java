@@ -20,7 +20,6 @@ import org.watson.demos.converters.UnwrappedPageJacksonHttpOutputMessageConverte
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -50,30 +49,38 @@ public class UnwrappedPageResponseBodyAdvice implements ResponseBodyAdvice<Page<
     private static final String PAGE_NUMBER_REPLACE_TOKEN = "##PAGE_NUMBER##";
     private static final Pattern PAGE_NUMBER_REPLACE_PATTERN = Pattern.compile(PAGE_NUMBER_REPLACE_TOKEN, Pattern.LITERAL);
 
-    private final String pagePrefix;
     private final String pageParameter;
     private final String pageQueryReplaceToken;
-    private final String indexHeaderName;
     private final int indexOffset;
+    private final String pageSizeHeader;
+    private final String pageSortHeader;
+    private final String pageIndexHeader;
+    private final String pageTotalHeader;
+    private final String pageElementsHeader;
 
     public UnwrappedPageResponseBodyAdvice(@Value("${spring.data.web.pageable.header-prefix:" + DEFAULT_PAGE_PREFIX + "}") String pageHeaderPrefix,
                                            SpringDataWebProperties webProperties) {
-        this.pagePrefix = pageHeaderPrefix;
+        final boolean isOneIndexed = webProperties.getPageable().isOneIndexedParameters();
+
         this.pageParameter = webProperties.getPageable().getPageParameter() + "=";
         this.pageQueryReplaceToken = pageParameter + PAGE_NUMBER_REPLACE_TOKEN;
-
-        boolean isOneIndexed = webProperties.getPageable().isOneIndexedParameters();
-        this.indexHeaderName = isOneIndexed ? "Number" : "Index";
         this.indexOffset = isOneIndexed ? 1 : 0;
+
+        this.pageSizeHeader = pageHeaderPrefix + "Size";
+        this.pageSortHeader = pageHeaderPrefix + "Sort";
+        this.pageIndexHeader = pageHeaderPrefix + (isOneIndexed ? "Number" : "Index");
+        this.pageTotalHeader = pageHeaderPrefix + "Total-Pages";
+        this.pageElementsHeader = pageHeaderPrefix + "Total-Elements";
     }
 
     @Override
-    public boolean supports(@Nullable MethodParameter methodParameter, @NonNull Class<? extends HttpMessageConverter<?>> aClass) {
+    public boolean supports(final @Nullable MethodParameter ignored, final @NonNull Class<? extends HttpMessageConverter<?>> aClass) {
         return UnwrappedPageJacksonHttpOutputMessageConverter.class.isAssignableFrom(aClass);
     }
 
     @Override
-    public Page<?> beforeBodyWrite(Page<?> page, @Nullable MethodParameter returnType, @Nullable MediaType mediaType, @Nullable Class<? extends HttpMessageConverter<?>> aClass, @NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response) {
+    public Page<?> beforeBodyWrite(final Page<?> page, final @Nullable MethodParameter ignored1, final @Nullable MediaType ignored2, final @Nullable Class<? extends HttpMessageConverter<?>> ignored3,
+                                   final @NonNull ServerHttpRequest request, final @NonNull ServerHttpResponse response) {
         if (page != null) { // find-bugs null-check
             response.getHeaders().setAll(buildPageHeaders(page));
             response.getHeaders().addAll(HttpHeaders.LINK, buildLinkHeaders(request.getURI(), page));
@@ -82,18 +89,19 @@ public class UnwrappedPageResponseBodyAdvice implements ResponseBodyAdvice<Page<
     }
 
     private Map<String, String> buildPageHeaders(final Page<?> page) {
-        return new HashMap<>() {{
-            put(pagePrefix + "Size", String.valueOf(page.getSize()));
-            put(pagePrefix + "Sort", String.valueOf(page.getSort()));
-            put(pagePrefix + indexHeaderName, String.valueOf(page.getNumber() + indexOffset));
-            put(pagePrefix + "Total-Pages", String.valueOf(page.getTotalPages()));
-            put(pagePrefix + "Total-Elements", String.valueOf(page.getTotalElements()));
-        }};
+        return Map.of(
+                pageSizeHeader, String.valueOf(page.getSize()),
+                pageSortHeader, String.valueOf(page.getSort()),
+                pageIndexHeader, String.valueOf(page.getNumber() + indexOffset),
+                pageTotalHeader, String.valueOf(page.getTotalPages()),
+                pageElementsHeader, String.valueOf(page.getTotalElements())
+        );
     }
 
     private List<String> buildLinkHeaders(final URI uri, final Page<?> page) {
-        String uriString = generateTokenizedPageUri(uri);
-        List<String> links = new ArrayList<>();
+        final String uriString = generateTokenizedPageUri(uri);
+        final List<String> links = new ArrayList<>();
+
         links.add(buildLinkHeader(uriString, page.getNumber() + indexOffset, "self"));
         if (!page.isFirst()) {
             links.add(buildLinkHeader(uriString, indexOffset, "first"));
@@ -111,18 +119,17 @@ public class UnwrappedPageResponseBodyAdvice implements ResponseBodyAdvice<Page<
     }
 
     private String generateTokenizedPageUri(final URI uri) {
-        String uriString = uri.toString();
-        if (!uriString.contains("?")) {
-            uriString += "?" + pageQueryReplaceToken;
-        } else if (uri.getQuery().contains(pageParameter)) {
-            uriString = uriString.replaceFirst("" + pageParameter + "\\d+", "" + pageQueryReplaceToken);
-        } else {
-            uriString += "&" + pageQueryReplaceToken;
+        final String uriString = uri.toString();
+        if (!uriString.contains("?")) { // No Query Parameters, add page token first
+            return uriString + "?" + pageQueryReplaceToken;
+        } else if (uri.getQuery().contains(pageParameter)) { // Replace 'page=\d+' parameter with page token
+            return uriString.replaceFirst("" + pageParameter + "\\d+", "" + pageQueryReplaceToken);
+        } else { // No Page Parameter, add page token last
+            return uriString + "&" + pageQueryReplaceToken;
         }
-        return uriString;
     }
 
-    private String buildLinkHeader(final String uri, int pageNumber, final String rel) {
+    private String buildLinkHeader(final String uri, final int pageNumber, final String rel) {
         return "<" + PAGE_NUMBER_REPLACE_PATTERN.matcher(uri).replaceFirst(String.valueOf(pageNumber)) + ">; rel=\"" + rel + "\"";
     }
 }

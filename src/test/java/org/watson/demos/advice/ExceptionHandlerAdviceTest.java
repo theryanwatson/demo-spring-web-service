@@ -45,7 +45,7 @@ class ExceptionHandlerAdviceTest {
 
     @MethodSource("status_exception_handlerMethod_source")
     @ParameterizedTest
-    void methodsHandleNulls(HttpStatus expectedStatus, Exception ignored, HandlerMethodBiFunction<Throwable> handlerMethod) {
+    void methodsHandleNulls(HttpStatus expectedStatus, Throwable ignored, HandlerMethodBiFunction<Throwable> handlerMethod) {
         ResponseEntity<Object> actual = handlerMethod.apply(null, null);
 
         assertThat(actual.getStatusCode(), is(expectedStatus));
