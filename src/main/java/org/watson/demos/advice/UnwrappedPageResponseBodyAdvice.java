@@ -16,7 +16,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
-import org.watson.demos.converters.UnwrappedPageJacksonHttpOutputMessageConverter;
+import org.watson.demos.converters.UnwrappedPageHttpMessageConverter;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 
 /**
  * Adds {@link Page} data to the response header to allow the {@link Page} body to be unwrapped without losing any
- * information. Used in conjunction with {@link UnwrappedPageJacksonHttpOutputMessageConverter}, which is enabled
+ * information. Used in conjunction with {@link UnwrappedPageHttpMessageConverter}, which is enabled
  * through a Spring property.<p/>
  * Adds the following headers to the response, with the configured prefix (default: {@value #DEFAULT_PAGE_PREFIX}):<ul>
  * <li>"Page-Size"</li>
@@ -38,11 +38,11 @@ import java.util.regex.Pattern;
  * </ul>
  * <strong>Configure the header prefix from default {@value #DEFAULT_PAGE_PREFIX} (or set to empty-string) by setting Spring property:</strong><blockquote>spring.data.web.pageable.header-prefix=New-Prefix-</blockquote>
  *
- * @see UnwrappedPageJacksonHttpOutputMessageConverter
+ * @see UnwrappedPageHttpMessageConverter
  * @see <a href="https://tools.ietf.org/html/rfc5988#page-6">RFC 5988</a>
  */
 @ConditionalOnWebApplication
-@ConditionalOnBean(UnwrappedPageJacksonHttpOutputMessageConverter.class)
+@ConditionalOnBean(UnwrappedPageHttpMessageConverter.class)
 @ControllerAdvice(annotations = RestController.class)
 public class UnwrappedPageResponseBodyAdvice implements ResponseBodyAdvice<Page<?>> {
     private static final String DEFAULT_PAGE_PREFIX = "Page-";
@@ -75,7 +75,7 @@ public class UnwrappedPageResponseBodyAdvice implements ResponseBodyAdvice<Page<
 
     @Override
     public boolean supports(final @Nullable MethodParameter ignored, final @NonNull Class<? extends HttpMessageConverter<?>> aClass) {
-        return UnwrappedPageJacksonHttpOutputMessageConverter.class.isAssignableFrom(aClass);
+        return UnwrappedPageHttpMessageConverter.class.isAssignableFrom(aClass);
     }
 
     @Override

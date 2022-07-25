@@ -12,6 +12,7 @@ import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -22,8 +23,8 @@ import java.io.IOException;
 import java.util.stream.Stream;
 
 /**
- * When enabled, unwraps {@link Page} json response body objects from {@link RestController} classes, returning only
- * the {@link Page#get()} content, instead of the wrapped {@link Page} response. Used in conjunction with
+ * Write-only converter. When enabled, unwraps {@link Page} json response body objects from {@link RestController} classes,
+ * returning only the {@link Page#get()} content, instead of the wrapped {@link Page} response. Used in conjunction with
  * {@link UnwrappedPageResponseBodyAdvice}, which writes all pertinent page data to the response headers.
  * <p></p><strong>Enable the feature with the Spring property:</strong><blockquote>server.response.advice.page.unwrap=true</blockquote>
  *
@@ -33,10 +34,10 @@ import java.util.stream.Stream;
 @ConditionalOnJava(JavaVersion.EIGHT)
 @ConditionalOnProperty("server.response.advice.page.unwrap")
 @Component
-public class UnwrappedPageJacksonHttpOutputMessageConverter extends AbstractHttpMessageConverter<Page<?>> {
+public class UnwrappedPageHttpMessageConverter extends AbstractHttpMessageConverter<Page<?>> {
     private final ObjectMapper objectMapper;
 
-    public UnwrappedPageJacksonHttpOutputMessageConverter(final ObjectMapper objectMapper) {
+    public UnwrappedPageHttpMessageConverter(final ObjectMapper objectMapper) {
         super(MediaType.APPLICATION_JSON, new MediaType("application", "*+json"));
         this.objectMapper = objectMapper
                 .registerModule(new Jdk8Module());
@@ -48,7 +49,7 @@ public class UnwrappedPageJacksonHttpOutputMessageConverter extends AbstractHttp
     }
 
     @Override
-    protected void writeInternal(Page<?> page, HttpOutputMessage outputMessage) throws IOException {
+    protected void writeInternal(final Page<?> page, final HttpOutputMessage outputMessage) throws IOException {
         JsonGenerator generator = objectMapper.getFactory()
                 .createGenerator(outputMessage.getBody());
         objectMapper.writerFor(Stream.class)
@@ -57,13 +58,13 @@ public class UnwrappedPageJacksonHttpOutputMessageConverter extends AbstractHttp
     }
 
     @Override
-    public boolean canRead(@Nullable final Class<?> aClass, final MediaType mediaType) {
+    public boolean canRead(@Nullable final Class<?> ignored1, final MediaType ignored2) {
         return false;
     }
 
     @NonNull
     @Override
-    protected Page<?> readInternal(@Nullable final Class<? extends Page<?>> clazz, @Nullable final HttpInputMessage inputMessage) {
-        return Page.empty();
+    protected Page<?> readInternal(@Nullable final Class<? extends Page<?>> ignored, @NonNull final HttpInputMessage inputMessage) {
+        throw new HttpMessageNotReadableException("Read not supported.", inputMessage);
     }
 }

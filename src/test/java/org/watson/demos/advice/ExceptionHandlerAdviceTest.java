@@ -1,5 +1,8 @@
 package org.watson.demos.advice;
 
+import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
+import org.hibernate.validator.internal.engine.path.PathImpl;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -11,9 +14,11 @@ import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.context.request.ServletWebRequest;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.function.BiFunction;
@@ -72,6 +77,19 @@ class ExceptionHandlerAdviceTest {
                 });
     }
 
+    @Test
+    void messageFormatting_handleValidationException() {
+        ConstraintViolationException exception = new ConstraintViolationException(Set.of(
+                createViolation("aField", "should be a"),
+                createViolation("bField", "should be b"),
+                createViolation("cField", "should be c")
+        ));
+        ResponseEntity<Object> actual = advice.handleValidationException(exception, TEST_WEB_REQUEST);
+
+        assertThat(actual.getBody(), notNullValue());
+        assertThat(actual.getBody().toString(), containsString("message=aField should be a, bField should be b, cField should be c"));
+    }
+
     private static Stream<Arguments> status_exception_handlerMethod_source() {
         ExceptionHandlerAdvice advice = new ExceptionHandlerAdvice();
         return Stream.of(
@@ -101,6 +119,12 @@ class ExceptionHandlerAdviceTest {
                 .findFirst()
                 .orElse(null);
     }
+
+    private ConstraintViolation<TestValidatedClass> createViolation(String property, String message) {
+        return ConstraintViolationImpl.forReturnValueValidation("", Map.of(), Map.of(), message, TestValidatedClass.class, new TestValidatedClass(), null, null, PathImpl.createPathFromString(property), null, null, null);
+    }
+
+    private static class TestValidatedClass {}
 
     @FunctionalInterface
     interface HandlerMethodBiFunction<T extends Throwable> extends BiFunction<T, ServletWebRequest, ResponseEntity<Object>> {}

@@ -17,7 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.watson.demos.converters.UnwrappedPageJacksonHttpOutputMessageConverter;
+import org.watson.demos.converters.UnwrappedPageHttpMessageConverter;
 
 import java.net.URI;
 import java.util.Collections;
@@ -55,7 +55,7 @@ class UnwrappedPageResponseBodyAdviceTest {
     @Mock
     private SpringDataWebProperties.Pageable pageable;
     @MockBean
-    private UnwrappedPageJacksonHttpOutputMessageConverter converter;
+    private UnwrappedPageHttpMessageConverter converter;
 
     @SpyBean
     private UnwrappedPageResponseBodyAdvice advice;
