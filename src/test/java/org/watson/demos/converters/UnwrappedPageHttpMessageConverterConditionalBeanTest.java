@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = {UnwrappedPageHttpMessageConverter.class, ObjectMapper.class}, properties = "server.response.advice.page.unwrap=false")
+@SpringBootTest(classes = {UnwrappedPageHttpMessageConverter.class, ObjectMapper.class}, properties = "server.response.unwrap.page=false")
 class UnwrappedPageHttpMessageConverterConditionalBeanTest {
     @Resource
     private ApplicationContext context;

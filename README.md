@@ -20,6 +20,7 @@ This article is an excellent place for everyone to start. I agree with, and prac
 * https://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api
 
 ### Some highlights that are included in this demo: 
+
 #### [Use RESTful nouns/items and verbs/actions](https://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api#restful)
 All endpoints will follow the path to the item(s) they return.
 From the above example, `GET /tickets` will return all tickets, `GET /tickets/12/messages` will return the messages for the specified ticket.
@@ -36,7 +37,6 @@ For an endpoint like `GET /departments/sales/orders/13/comments/1`:
     }
 ]}
 ```
-
 
 #### [Versioning through request path](https://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api#versioning)
 Spring makes this easy, since your `@RequestMapping` at the RestController class-level can use Spring Placeholder variables:
@@ -61,7 +61,7 @@ At the time of this README, there isn't any built-in conversion from a Page retu
 To use Paged results in a pragmatic way, this project includes
 [UnwrappedPageHttpMessageConverter](src/main/java/org/watson/demos/converters/UnwrappedPageHttpMessageConverter.java) and
 [UnwrappedPageResponseBodyAdvice](src/main/java/org/watson/demos/advice/UnwrappedPageResponseBodyAdvice.java). When enabled
-by the property `server.response.advice.page.unwrap=true`, then enable the developer to return a `Page<SomeModelClass>` from the controller endpoint method. The resulting response will
+by the property `server.response.unwrap.page=true`, then enable the developer to return a `Page<SomeModelClass>` from the controller endpoint method. The resulting response will
 contain a JSON array of `SomeModelClass` and Link headers to control paging, in accordance with [RFC 8288](https://datatracker.ietf.org/doc/html/rfc8288).
 
 ## Additional Resources

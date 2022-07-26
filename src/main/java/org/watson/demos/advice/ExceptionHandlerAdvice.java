@@ -1,14 +1,21 @@
 package org.watson.demos.advice;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.ErrorProperties;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -30,21 +37,51 @@ import java.util.stream.Collectors;
 import static java.time.ZoneOffset.UTC;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.function.Predicate.not;
+import static org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeAttribute.ALWAYS;
 
 @Slf4j
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @ConditionalOnWebApplication
 @RestControllerAdvice
 public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
+    private final boolean includeException;
+    private final boolean includeMessage;
+    private final boolean includeStacktrace;
 
+    @Autowired
+    public ExceptionHandlerAdvice(Optional<ServerProperties> serverProperties) {
+        this(
+                serverProperties
+                        .map(ServerProperties::getError)
+                        .map(ErrorProperties::isIncludeException)
+                        .orElse(false),
+                serverProperties
+                        .map(ServerProperties::getError)
+                        .map(ErrorProperties::getIncludeMessage)
+                        .map(ALWAYS::equals)
+                        .orElse(false),
+                serverProperties
+                        .map(ServerProperties::getError)
+                        .map(ErrorProperties::getIncludeStacktrace)
+                        .map(ALWAYS::equals)
+                        .orElse(false)
+        );
+    }
+
+    /**
+     * {@link HttpStatus#CONFLICT} Exception Handler. Add additional Exception "Conflict" classes
+     */
     @ExceptionHandler({
             DuplicateKeyException.class,
             SQLIntegrityConstraintViolationException.class,
     })
-    public ResponseEntity<Object> handleDuplicateKeyException(final Throwable exception, final ServletWebRequest request) {
+    public ResponseEntity<Object> handleConflictException(final Throwable exception, final ServletWebRequest request) {
         return handleExceptionInternal(exception, Throwable::getMessage, HttpStatus.CONFLICT, request);
     }
 
+    /**
+     * {@link HttpStatus#NOT_FOUND} Exception Handler. Add additional Exception "Not Found" classes
+     */
     @ExceptionHandler({
             EntityNotFoundException.class,
     })
@@ -52,11 +89,27 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(throwable, Throwable::getMessage, HttpStatus.NOT_FOUND, request);
     }
 
+    /**
+     * {@link HttpStatus#BAD_REQUEST} Exception Handler. Add additional Exception "Bad Request" classes
+     */
+    @ExceptionHandler({
+            PropertyReferenceException.class,
+    })
+    public ResponseEntity<Object> handleBadRequestException(final Throwable throwable, final ServletWebRequest request) {
+        return handleExceptionInternal(throwable, Throwable::getMessage, HttpStatus.BAD_REQUEST, request);
+    }
+
+    /**
+     * {@link ConstraintViolationException} format-specific exception handler
+     */
     @ExceptionHandler(javax.validation.ConstraintViolationException.class)
     public ResponseEntity<Object> handleValidationException(final javax.validation.ConstraintViolationException exception, final ServletWebRequest request) {
         return handleExceptionInternal(exception, this::buildValidationExceptionMessage, HttpStatus.BAD_REQUEST, request);
     }
 
+    /**
+     * Wrapped-Exception Handler. Unwraps Exception and routes to other handlers, base on class.
+     */
     @ExceptionHandler({
             InvocationTargetException.class,
             javax.persistence.RollbackException.class,
@@ -66,9 +119,11 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
         Throwable unwrappedCause = unwrapCause(exception);
 
         if (unwrappedCause instanceof DuplicateKeyException || unwrappedCause instanceof SQLIntegrityConstraintViolationException) {
-            return handleDuplicateKeyException(unwrappedCause, request);
+            return handleConflictException(unwrappedCause, request);
         } else if (unwrappedCause instanceof EntityNotFoundException) {
             return handleNotFoundException(unwrappedCause, request);
+        } else if (unwrappedCause instanceof PropertyReferenceException) {
+            return handleBadRequestException(unwrappedCause, request);
         } else if (unwrappedCause instanceof javax.validation.ConstraintViolationException) {
             return handleValidationException((javax.validation.ConstraintViolationException) unwrappedCause, request);
         }
@@ -77,26 +132,35 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
     }
 
     private <T extends Throwable> ResponseEntity<Object> handleExceptionInternal(final T throwable, final Function<T, String> messageSupplier, final HttpStatus status, final ServletWebRequest request) {
-        if (throwable == null || messageSupplier == null) {
-            return new ResponseEntity<>(
-                    formatBody(status, null, request),
-                    buildHeaders(),
-                    status);
+        final Object body = formatBody(status, throwable, messageSupplier, request);
+        log.info("{}", body);
+
+        if (request == null) {
+            return new ResponseEntity<>(body, buildHeaders(), status);
         } else {
             return super.handleExceptionInternal(
                     throwable instanceof Exception ? (Exception) throwable : new RuntimeException(throwable),
-                    formatBody(status, messageSupplier.apply(throwable), request),
-                    buildHeaders(),
-                    status,
-                    request
-            );
+                    body, buildHeaders(), status, request);
         }
     }
 
-    private HttpHeaders buildHeaders() {
-        return new HttpHeaders() {{
-            setContentType(MediaType.APPLICATION_JSON);
-        }};
+    private <T extends Throwable> Object formatBody(@NonNull final HttpStatus status,
+                                                    @Nullable final T throwable,
+                                                    @Nullable final Function<T, String> messageSupplier,
+                                                    @Nullable final ServletWebRequest request) {
+        return ErrorBody.builder()
+                .timestamp(ZonedDateTime.now(UTC)
+                        .truncatedTo(MILLIS))
+                .status(status.value())
+                .error(status.getReasonPhrase())
+                .path(Optional.ofNullable(request)
+                        .map(ServletRequestAttributes::getRequest)
+                        .map(HttpServletRequest::getServletPath)
+                        .orElse(null))
+                .message(includeMessage && throwable != null && messageSupplier != null ? messageSupplier.apply(throwable) : null)
+                .exception(includeException && throwable != null ? throwable.getClass().getName() : null)
+                .trace(includeStacktrace && throwable != null ? ExceptionUtils.getStackTrace(throwable) : null)
+                .build();
     }
 
     private String buildValidationExceptionMessage(ConstraintViolationException exception) {
@@ -109,18 +173,8 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
                 .orElse(exception.getMessage());
     }
 
-    private Object formatBody(final HttpStatus status, final String message, final ServletWebRequest request) {
-        return ErrorBody.builder()
-                .timestamp(ZonedDateTime.now(UTC)
-                        .truncatedTo(MILLIS))
-                .status(status.value())
-                .error(status.getReasonPhrase())
-                .message(message)
-                .path(Optional.ofNullable(request)
-                        .map(ServletRequestAttributes::getRequest)
-                        .map(HttpServletRequest::getServletPath)
-                        .orElse(null))
-                .build();
+    private HttpHeaders buildHeaders() {
+        return new HttpHeaders();
     }
 
     private Throwable unwrapCause(final Throwable exception) {
@@ -139,7 +193,9 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
         ZonedDateTime timestamp;
         int status;
         String error;
+        String exception;
         String path;
         String message;
+        String trace;
     }
 }

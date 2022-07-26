@@ -1,4 +1,6 @@
-package org.watson.demos.validators;
+package org.watson.demos.validation.validators;
+
+import org.watson.demos.validation.constraints.ValidLocale;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -8,11 +10,11 @@ import java.util.Set;
 /**
  * Checks that a validated {@link Locale} is {@code null} or exists in {@link Locale#getAvailableLocales()}.
  */
-public class AvailableLocaleValidator implements ConstraintValidator<AvailableLocale, Locale> {
+public class LocaleValidator implements ConstraintValidator<ValidLocale, Locale> {
     private static final Set<Locale> AVAILABLE_LOCALES = Set.of(Locale.getAvailableLocales());
 
     @Override
-    public void initialize(AvailableLocale availableLocale) {}
+    public void initialize(ValidLocale validLocale) {}
 
     @Override
     public boolean isValid(Locale locale, ConstraintValidatorContext context) {

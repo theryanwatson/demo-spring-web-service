@@ -26,13 +26,13 @@ import java.util.stream.Stream;
  * Write-only converter. When enabled, unwraps {@link Page} json response body objects from {@link RestController} classes,
  * returning only the {@link Page#get()} content, instead of the wrapped {@link Page} response. Used in conjunction with
  * {@link UnwrappedPageResponseBodyAdvice}, which writes all pertinent page data to the response headers.
- * <p></p><strong>Enable the feature with the Spring property:</strong><blockquote>server.response.advice.page.unwrap=true</blockquote>
+ * <p></p><strong>Enable the feature with the Spring property:</strong><blockquote>server.response.unwrap.page=true</blockquote>
  *
  * @see UnwrappedPageResponseBodyAdvice
  */
 @ConditionalOnWebApplication
 @ConditionalOnJava(JavaVersion.EIGHT)
-@ConditionalOnProperty("server.response.advice.page.unwrap")
+@ConditionalOnProperty("server.response.unwrap.page")
 @Component
 public class UnwrappedPageHttpMessageConverter extends AbstractHttpMessageConverter<Page<?>> {
     private final ObjectMapper objectMapper;

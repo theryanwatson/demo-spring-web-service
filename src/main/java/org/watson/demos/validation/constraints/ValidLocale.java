@@ -1,4 +1,6 @@
-package org.watson.demos.validators;
+package org.watson.demos.validation.constraints;
+
+import org.watson.demos.validation.validators.LocaleValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -12,9 +14,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({METHOD, FIELD, CONSTRUCTOR, PARAMETER})
 @Retention(RUNTIME)
 @Documented
-@Constraint(validatedBy = AvailableLocaleValidator.class)
-public @interface AvailableLocale {
-    String message() default "{javax.validation.constraints.AvailableLocale.message}";
+@Constraint(validatedBy = LocaleValidator.class)
+public @interface ValidLocale {
+    String message() default "{validation.constraints.ValidLocale.message}";
 
     Class<?>[] groups() default {};
 

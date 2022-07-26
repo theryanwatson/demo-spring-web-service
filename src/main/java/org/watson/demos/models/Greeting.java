@@ -1,7 +1,8 @@
 package org.watson.demos.models;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import org.watson.demos.validators.AvailableLocale;
+import org.watson.demos.validation.constraints.ValidLocale;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -19,13 +20,15 @@ import java.util.UUID;
 public class Greeting implements Serializable {
     @Id
     @GeneratedValue
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private UUID id;
 
     @NotBlank
     @Basic(optional = false)
     private String content;
 
-    @AvailableLocale
+    @ValidLocale
     @Builder.Default
+    @Schema(type = "string", format = "locale")
     private Locale locale = Locale.getDefault();
 }
