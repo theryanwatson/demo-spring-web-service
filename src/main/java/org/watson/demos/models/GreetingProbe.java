@@ -1,6 +1,7 @@
 package org.watson.demos.models;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import org.springdoc.api.annotations.ParameterObject;
 import org.watson.demos.validation.constraints.ValidLocale;
@@ -13,5 +14,6 @@ import java.util.Locale;
 @JsonDeserialize(builder = GreetingProbe.GreetingProbeBuilder.class)
 public class GreetingProbe {
     @ValidLocale
+    @Schema(type = "string", format = "locale")
     Locale locale;
 }

@@ -81,6 +81,16 @@ class SpringDocConfigurationTest {
         assertThat(openAPI.getInfo().getTermsOfService(), is(TERM_OF_SERVICE));
     }
 
+    @Test
+    void iterableModelConverter() {
+        // TODO How to verify behavior?
+    }
+
+    @Test
+    void sharedErrors() {
+        // TODO Verify!
+    }
+
     @TestConfiguration
     static class BuildPropertiesTestConfiguration {
         @Bean

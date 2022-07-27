@@ -9,6 +9,7 @@ import org.watson.demos.models.Greeting;
 import org.watson.demos.models.GreetingProbe;
 import org.watson.demos.repositories.GreetingRepository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -17,7 +18,11 @@ public class GreetingService {
 
     private final GreetingRepository repository;
 
-    public Page<Greeting> getGreetings(@NonNull final GreetingProbe probe, @NonNull final Pageable pageable) {
+    public Optional<Greeting> getOne(UUID id) {
+        return repository.findById(id);
+    }
+
+    public Page<Greeting> getAll(@NonNull final GreetingProbe probe, @NonNull final Pageable pageable) {
         if (probe.getLocale() != null) {
             return repository.findAllByLocale(probe.getLocale(), pageable);
         } else {
@@ -25,11 +30,11 @@ public class GreetingService {
         }
     }
 
-    public Iterable<Greeting> createGreetings(@NonNull final Iterable<Greeting> greetings) {
+    public Iterable<Greeting> createAll(@NonNull final Iterable<Greeting> greetings) {
         return repository.saveAll(greetings);
     }
 
-    public void deleteGreetings(@NonNull final Iterable<UUID> ids) {
+    public void deleteAll(@NonNull final Iterable<UUID> ids) {
         repository.deleteAllById(ids);
     }
 }

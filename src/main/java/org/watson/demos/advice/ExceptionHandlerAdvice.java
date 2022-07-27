@@ -1,7 +1,6 @@
 package org.watson.demos.advice;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.watson.demos.models.ErrorResponse;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
@@ -148,7 +148,7 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
                                                     @Nullable final T throwable,
                                                     @Nullable final Function<T, String> messageSupplier,
                                                     @Nullable final ServletWebRequest request) {
-        return ErrorBody.builder()
+        return ErrorResponse.builder()
                 .timestamp(ZonedDateTime.now(UTC)
                         .truncatedTo(MILLIS))
                 .status(status.value())
@@ -185,17 +185,5 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
             unwrapped = exception.getCause();
         }
         return unwrapped != null ? unwrapped : exception;
-    }
-
-    @Builder
-    @lombok.Value
-    private static class ErrorBody {
-        ZonedDateTime timestamp;
-        int status;
-        String error;
-        String exception;
-        String path;
-        String message;
-        String trace;
     }
 }
