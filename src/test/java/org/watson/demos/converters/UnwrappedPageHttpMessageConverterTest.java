@@ -38,8 +38,8 @@ class UnwrappedPageHttpMessageConverterTest {
 
     @Test
     void writeInternalCorrectlyUnwrapsAndMarshalsContents() throws IOException {
-        List<String> expected = List.of("a", "b", "c", "d", "e", "f");
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        final List<String> expected = List.of("a", "b", "c", "d", "e", "f");
+        final ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
         when(message.getBody()).thenReturn(stream);
         when(message.getHeaders()).thenReturn(new HttpHeaders());

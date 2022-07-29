@@ -74,7 +74,7 @@ class UnwrappedPageResponseBodyAdviceTest {
 
     @Test
     void pageResultPassesObjectThrough() {
-        Page<String> page = new PageImpl<>(EXPECTED);
+        final Page<String> page = new PageImpl<>(EXPECTED);
 
         assertThat(advice.beforeBodyWrite(page, null, null, null, request, response),
                 sameInstance(page));
@@ -104,7 +104,7 @@ class UnwrappedPageResponseBodyAdviceTest {
         when(pageable.getPageParameter()).thenReturn(PAGE_NUMBER_PARAMETER);
         when(pageable.isOneIndexedParameters()).thenReturn(true);
 
-        UnwrappedPageResponseBodyAdvice advice = spy(new UnwrappedPageResponseBodyAdvice(PAGE_HEADER_PREFIX, webProperties));
+        final UnwrappedPageResponseBodyAdvice advice = spy(new UnwrappedPageResponseBodyAdvice(PAGE_HEADER_PREFIX, webProperties));
 
         forEachPage(advice, 2, Sort.unsorted(), EXPECTED, (page, totalPages) ->
                 assertPageHeaders("Number", page, 1, 2, totalPages, EXPECTED.size()));
@@ -112,14 +112,14 @@ class UnwrappedPageResponseBodyAdviceTest {
 
     @Test
     void linkSortSetCorrectlyPerUnsortedPage() {
-        Sort sort = Sort.unsorted();
+        final Sort sort = Sort.unsorted();
         forEachPage(advice, 3, sort, EXPECTED, (page, totalPages) ->
                 assertThat(headers.getOrEmpty(PAGE_HEADER_PREFIX + "Sort").get(0), is(String.valueOf(sort))));
     }
 
     @Test
     void linkSortSetCorrectlyPerPage() {
-        Sort sort = Sort.by(Sort.Direction.ASC, "property1").and(Sort.by("property2"));
+        final Sort sort = Sort.by(Sort.Direction.ASC, "property1").and(Sort.by("property2"));
         forEachPage(advice, 3, sort, EXPECTED, (page, totalPages) ->
                 assertThat(headers.getOrEmpty(PAGE_HEADER_PREFIX + "Sort").get(0), is(String.valueOf(sort))));
     }
@@ -132,7 +132,7 @@ class UnwrappedPageResponseBodyAdviceTest {
 
     @Test
     void linkHeadersSetCorrectlyPerPageWithArgsNoPage() {
-        String requestUri = FAKE_URI + "?things=cool&arg=" + PAGE_NUMBER_PARAMETER;
+        final String requestUri = FAKE_URI + "?things=cool&arg=" + PAGE_NUMBER_PARAMETER;
         when(request.getURI()).thenReturn(URI.create(requestUri));
 
         forEachPage(advice, 2, Sort.unsorted(), EXPECTED, (page, totalPages) ->
@@ -141,7 +141,7 @@ class UnwrappedPageResponseBodyAdviceTest {
 
     @Test
     void linkHeadersSetCorrectlyPerPageWithPageArgs() {
-        String requestUri = FAKE_URI + "?things=cool&arg=yup";
+        final String requestUri = FAKE_URI + "?things=cool&arg=yup";
         when(response.getHeaders()).thenReturn(headers);
         when(request.getURI()).thenReturn(URI.create(requestUri + "&" + PAGE_NUMBER_PARAMETER + "=13"));
 
@@ -155,13 +155,13 @@ class UnwrappedPageResponseBodyAdviceTest {
         when(pageable.getPageParameter()).thenReturn(PAGE_NUMBER_PARAMETER);
         when(pageable.isOneIndexedParameters()).thenReturn(true);
 
-        UnwrappedPageResponseBodyAdvice advice = spy(new UnwrappedPageResponseBodyAdvice(PAGE_HEADER_PREFIX, webProperties));
+        final UnwrappedPageResponseBodyAdvice advice = spy(new UnwrappedPageResponseBodyAdvice(PAGE_HEADER_PREFIX, webProperties));
 
         forEachPage(advice, 2, Sort.unsorted(), EXPECTED, (page, totalPages) ->
                 assertLinkHeaders(FAKE_URI + "?", page, 1, totalPages));
     }
 
-    private void assertPageHeaders(String indexFieldName, int page, int pageModifier, int pageSize, int totalPages, int totalElements) {
+    private void assertPageHeaders(final String indexFieldName, final int page, final int pageModifier, final int pageSize, final int totalPages, final int totalElements) {
         Map.of(
                         indexFieldName, page + pageModifier,
                         "Size", pageSize,
@@ -174,7 +174,7 @@ class UnwrappedPageResponseBodyAdviceTest {
                 });
     }
 
-    private void assertLinkHeaders(String uriPrefix, int page, int pageModifier, int totalPages) {
+    private void assertLinkHeaders(final String uriPrefix, final int page, final int pageModifier, final int totalPages) {
         assertThat(findLink("self").orElseThrow(AssertionError::new),
                 containsString(uriPrefix + PAGE_NUMBER_PARAMETER + "=" + (page + pageModifier)));
 
@@ -200,14 +200,14 @@ class UnwrappedPageResponseBodyAdviceTest {
         }
     }
 
-    private Optional<String> findLink(String self) {
-        List<String> links = headers.get(HttpHeaders.LINK);
+    private Optional<String> findLink(final String self) {
+        final List<String> links = headers.get(HttpHeaders.LINK);
         return links == null ? Optional.empty() : links.stream().filter(f -> f.contains(self)).findFirst();
     }
 
-    private void forEachPage(UnwrappedPageResponseBodyAdvice advice, int pageSize, Sort sort, List<String> expected, BiConsumer<Integer, Integer> assertFunction) {
+    private void forEachPage(final UnwrappedPageResponseBodyAdvice advice, final int pageSize, final Sort sort, final List<String> expected, final BiConsumer<Integer, Integer> assertFunction) {
         int page = 0;
-        int totalPages = (int) Math.ceil((double) expected.size() / (double) pageSize);
+        final int totalPages = (int) Math.ceil((double) expected.size() / (double) pageSize);
 
         do {
             headers.clear();

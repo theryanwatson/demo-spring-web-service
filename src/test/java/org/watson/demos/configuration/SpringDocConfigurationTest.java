@@ -91,7 +91,7 @@ class SpringDocConfigurationTest {
 
     @Test
     void arraySchemaModelConverter_convertsSupportedType() {
-        Schema<?> schema = arraySchemaModelConverter.resolve(new AnnotatedType(TestArrayType.class), new ModelConverterContextImpl(List.of()), Collections.emptyIterator());
+        final Schema<?> schema = arraySchemaModelConverter.resolve(new AnnotatedType(TestArrayType.class), new ModelConverterContextImpl(List.of()), Collections.emptyIterator());
 
         assertThat(schema, notNullValue());
         assertThat(schema.getType(), is("array"));
@@ -99,7 +99,7 @@ class SpringDocConfigurationTest {
 
     @Test
     void arraySchemaModelConverter_doesNotConvertOtherTypes() {
-        Schema<?> schema = arraySchemaModelConverter.resolve(new AnnotatedType(TestUnmappedType.class), new ModelConverterContextImpl(List.of()), Collections.emptyIterator());
+        final Schema<?> schema = arraySchemaModelConverter.resolve(new AnnotatedType(TestUnmappedType.class), new ModelConverterContextImpl(List.of()), Collections.emptyIterator());
 
         assertThat(schema, nullValue());
     }

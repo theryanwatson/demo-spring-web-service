@@ -16,13 +16,13 @@ public class PageableValidator implements ConstraintValidator<ValidPageable, Pag
     private int minNumber;
 
     @Override
-    public void initialize(ValidPageable constraintAnnotation) {
+    public void initialize(final ValidPageable constraintAnnotation) {
         this.minSize = constraintAnnotation.minSize();
         this.minNumber = constraintAnnotation.minPage();
     }
 
     @Override
-    public boolean isValid(Pageable pageable, ConstraintValidatorContext context) {
+    public boolean isValid(final Pageable pageable, final ConstraintValidatorContext ignored) {
         return pageable == null || (pageable.getPageSize() >= minSize && pageable.getPageNumber() >= minNumber);
     }
 }

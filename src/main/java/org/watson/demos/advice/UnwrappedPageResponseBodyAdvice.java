@@ -58,8 +58,8 @@ public class UnwrappedPageResponseBodyAdvice implements ResponseBodyAdvice<Page<
     private final String pageTotalHeader;
     private final String pageElementsHeader;
 
-    public UnwrappedPageResponseBodyAdvice(@Value("${spring.data.web.pageable.header-prefix:" + DEFAULT_PAGE_PREFIX + "}") String pageHeaderPrefix,
-                                           SpringDataWebProperties webProperties) {
+    public UnwrappedPageResponseBodyAdvice(@Value("${spring.data.web.pageable.header-prefix:" + DEFAULT_PAGE_PREFIX + "}") final String pageHeaderPrefix,
+                                           final SpringDataWebProperties webProperties) {
         final boolean isOneIndexed = webProperties.getPageable().isOneIndexedParameters();
 
         this.pageParameter = webProperties.getPageable().getPageParameter() + "=";
@@ -74,13 +74,13 @@ public class UnwrappedPageResponseBodyAdvice implements ResponseBodyAdvice<Page<
     }
 
     @Override
-    public boolean supports(final @Nullable MethodParameter ignored, final @NonNull Class<? extends HttpMessageConverter<?>> aClass) {
+    public boolean supports(@Nullable final MethodParameter ignored, @NonNull final Class<? extends HttpMessageConverter<?>> aClass) {
         return UnwrappedPageHttpMessageConverter.class.isAssignableFrom(aClass);
     }
 
     @Override
-    public Page<?> beforeBodyWrite(final Page<?> page, final @Nullable MethodParameter ignored1, final @Nullable MediaType ignored2, final @Nullable Class<? extends HttpMessageConverter<?>> ignored3,
-                                   final @NonNull ServerHttpRequest request, final @NonNull ServerHttpResponse response) {
+    public Page<?> beforeBodyWrite(final Page<?> page, @Nullable final MethodParameter ignored1, @Nullable final MediaType ignored2, @Nullable final Class<? extends HttpMessageConverter<?>> ignored3,
+                                   @NonNull final ServerHttpRequest request, @NonNull final ServerHttpResponse response) {
         if (page != null) { // find-bugs null-check
             response.getHeaders().setAll(buildPageHeaders(page));
             response.getHeaders().addAll(HttpHeaders.LINK, buildLinkHeaders(request.getURI(), page));

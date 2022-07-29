@@ -38,8 +38,8 @@ public class UnwrappedExceptionResolver extends DefaultHandlerExceptionResolver 
     private final Set<Class<? extends Throwable>> unwrappedExceptions;
     private final Map<Class<? extends Throwable>, Integer> exceptionErrorCodes;
 
-    public UnwrappedExceptionResolver(@Value("${server.error.unwrapped-exceptions:}") Set<Class<? extends Throwable>> unwrappedExceptions,
-                                      @Value("#{${server.error.exception-codes:{:}}}") Map<Class<? extends Throwable>, Integer> exceptionErrorCodes) {
+    public UnwrappedExceptionResolver(@Value("${server.error.unwrapped-exceptions:}") final Set<Class<? extends Throwable>> unwrappedExceptions,
+                                      @Value("#{${server.error.exception-codes:{:}}}") final Map<Class<? extends Throwable>, Integer> exceptionErrorCodes) {
         this.unwrappedExceptions = unwrappedExceptions;
         this.exceptionErrorCodes = exceptionErrorCodes;
         setOrder(Ordered.LOWEST_PRECEDENCE);
@@ -47,20 +47,20 @@ public class UnwrappedExceptionResolver extends DefaultHandlerExceptionResolver 
     }
 
     @Override
-    public ModelAndView resolveException(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, Object handler, @NonNull Exception ex) {
+    public ModelAndView resolveException(@NonNull final HttpServletRequest request, @NonNull final HttpServletResponse response, final Object handler, @NonNull final Exception ex) {
         final Exception unwrapped = unwrap(ex);
         ERROR_EXCEPTION_ATTRIBUTES.forEach(attribute -> request.setAttribute(attribute, unwrapped));
         return super.resolveException(request, response, handler, unwrapped);
     }
 
     @Override
-    protected ModelAndView doResolveException(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, Object handler, @NonNull Exception exception) {
+    protected ModelAndView doResolveException(@NonNull final HttpServletRequest request, @NonNull final HttpServletResponse response, final Object handler, @NonNull final Exception exception) {
         final ModelAndView modelAndView = super.doResolveException(request, response, handler, exception);
         if (modelAndView != null) {
             return modelAndView;
         }
 
-        Optional<Integer> code = findHttpStatusCode(exception);
+        final Optional<Integer> code = findHttpStatusCode(exception);
         if (code.isPresent()) {
             try {
                 response.sendError(code.get());

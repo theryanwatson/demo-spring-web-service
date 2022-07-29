@@ -32,7 +32,7 @@ class GreetingRepositoryTest {
     void testStuff() {
         repository.saveAll(TEST_VALUES);
 
-        Page<Greeting> actual = repository.findAll(Pageable.unpaged());
+        final Page<Greeting> actual = repository.findAll(Pageable.unpaged());
 
         assertThat(actual, notNullValue());
         assertThat(actual.getTotalElements(), is((long) TEST_VALUES.size()));

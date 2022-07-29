@@ -21,7 +21,7 @@ public class GreetingService {
 
     private final GreetingRepository repository;
 
-    public Optional<Greeting> getOne(UUID id) {
+    public Optional<Greeting> getOne(final UUID id) {
         return repository.findById(id);
     }
 

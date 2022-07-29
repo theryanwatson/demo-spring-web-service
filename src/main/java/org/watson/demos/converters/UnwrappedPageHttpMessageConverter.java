@@ -50,7 +50,7 @@ public class UnwrappedPageHttpMessageConverter extends AbstractHttpMessageConver
 
     @Override
     protected void writeInternal(final Page<?> page, final HttpOutputMessage outputMessage) throws IOException {
-        JsonGenerator generator = objectMapper.getFactory()
+        final JsonGenerator generator = objectMapper.getFactory()
                 .createGenerator(outputMessage.getBody());
         objectMapper.writerFor(Stream.class)
                 .writeValue(generator, page.get());

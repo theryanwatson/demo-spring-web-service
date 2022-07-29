@@ -93,7 +93,7 @@ class RequestLoggingFilterTest {
 
     @Test
     void doFilter_LogsWarnWhenUnknownRequestClass() throws IOException, ServletException {
-        ServletRequest wrongRequestType = mock(ServletRequest.class);
+        final ServletRequest wrongRequestType = mock(ServletRequest.class);
         filter.doFilter(wrongRequestType, mockResponse, mockChain);
 
         assertThat(listAppender.list, hasSize(1));
@@ -103,7 +103,7 @@ class RequestLoggingFilterTest {
 
     @Test
     void doFilter_LogsWhenUnknownResponseClass() throws IOException, ServletException {
-        ServletResponse wrongResponseType = mock(ServletResponse.class);
+        final ServletResponse wrongResponseType = mock(ServletResponse.class);
         filter.doFilter(mockRequest, wrongResponseType, mockChain);
 
         assertLogLineMatches("GET=/things/path?x=y&a=b;client=10.10.10.10;status=null;duration=", mockRequest, wrongResponseType);
@@ -121,8 +121,8 @@ class RequestLoggingFilterTest {
         filter.doFilter(mockRequest, mockResponse, mockChain);
 
         assertThat(listAppender.list, hasSize(1));
-        String message = listAppender.list.get(0).getFormattedMessage();
-        int duration = Integer.parseInt(message.substring(message.lastIndexOf('=') + 1));
+        final String message = listAppender.list.get(0).getFormattedMessage();
+        final int duration = Integer.parseInt(message.substring(message.lastIndexOf('=') + 1));
 
         assertThat(duration, allOf(greaterThanOrEqualTo(expectedDuration), lessThanOrEqualTo(expectedDuration + 20)));
         verify(mockChain).doFilter(mockRequest, mockResponse);
@@ -133,7 +133,7 @@ class RequestLoggingFilterTest {
         assertThat(filter.getOrder(), notNullValue());
     }
 
-    private void assertLogLineMatches(String logLinePrefix, HttpServletRequest request, ServletResponse response) throws IOException, ServletException {
+    private void assertLogLineMatches(final String logLinePrefix, final HttpServletRequest request, final ServletResponse response) throws IOException, ServletException {
         assertThat(listAppender.list, hasSize(1));
         assertThat(listAppender.list.get(0).getLevel(), is(Level.INFO));
         assertThat(listAppender.list.get(0).getFormattedMessage(), startsWith(logLinePrefix));

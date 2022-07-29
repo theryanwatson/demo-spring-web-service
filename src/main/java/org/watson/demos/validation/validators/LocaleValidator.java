@@ -14,10 +14,7 @@ public class LocaleValidator implements ConstraintValidator<ValidLocale, Locale>
     private static final Set<Locale> AVAILABLE_LOCALES = Set.of(Locale.getAvailableLocales());
 
     @Override
-    public void initialize(ValidLocale validLocale) {}
-
-    @Override
-    public boolean isValid(Locale locale, ConstraintValidatorContext context) {
+    public boolean isValid(final Locale locale, final ConstraintValidatorContext ignored) {
         return locale == null || AVAILABLE_LOCALES.contains(locale);
     }
 }

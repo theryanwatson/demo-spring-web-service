@@ -36,7 +36,7 @@ class UnwrappedExceptionResolverTest {
 
     @Test
     void resolveException_unwrapsException() {
-        Exception expected = new Exception("expected");
+        final Exception expected = new Exception("expected");
 
         resolver.resolveException(request, response, null, new InvocationTargetException(expected));
 
@@ -45,7 +45,7 @@ class UnwrappedExceptionResolverTest {
 
     @Test
     void resolveException_unwrapsLayeredExceptions() {
-        Exception expected = new Exception("expected");
+        final Exception expected = new Exception("expected");
 
         resolver.resolveException(request, response, null, new InvocationTargetException(new TransactionSystemException("fake", expected)));
 
@@ -54,7 +54,7 @@ class UnwrappedExceptionResolverTest {
 
     @Test
     void resolveException_doesNotUnwrapException() {
-        Exception expected = new RuntimeException("expected", new Exception("fake"));
+        final Exception expected = new RuntimeException("expected", new Exception("fake"));
 
         resolver.resolveException(request, response, null, expected);
 
@@ -64,9 +64,9 @@ class UnwrappedExceptionResolverTest {
     @SneakyThrows
     @Test
     void doResolveException_returnsMappedCode() {
-        Exception expected = new RuntimeException("expected", new Exception("fake"));
+        final Exception expected = new RuntimeException("expected", new Exception("fake"));
 
-        ModelAndView mv = resolver.doResolveException(request, response, null, expected);
+        final ModelAndView mv = resolver.doResolveException(request, response, null, expected);
 
         assertThat(mv, notNullValue());
         assertThat(mv.getViewName(), is("error"));
@@ -75,9 +75,9 @@ class UnwrappedExceptionResolverTest {
 
     @Test
     void doResolveException_returnsNullForUnmapped() {
-        Exception expected = new Exception("expected");
+        final Exception expected = new Exception("expected");
 
-        ModelAndView mv = resolver.doResolveException(request, response, null, expected);
+        final ModelAndView mv = resolver.doResolveException(request, response, null, expected);
 
         assertThat(mv, nullValue());
         verifyNoInteractions(response);
@@ -88,9 +88,9 @@ class UnwrappedExceptionResolverTest {
     void doResolveException_returnsNullOnSendErrorException() {
         doThrow(new IOException("fake"))
                 .when(response).sendError(anyInt());
-        Exception expected = new RuntimeException("expected");
+        final Exception expected = new RuntimeException("expected");
 
-        ModelAndView mv = resolver.doResolveException(request, response, null, expected);
+        final ModelAndView mv = resolver.doResolveException(request, response, null, expected);
 
         assertThat(mv, nullValue());
         verify(response).sendError(400);
@@ -99,9 +99,9 @@ class UnwrappedExceptionResolverTest {
     @SneakyThrows
     @Test
     void doResolveException_returnsSuperClassResult() {
-        Exception expected = new HttpMediaTypeNotAcceptableException("expected");
+        final Exception expected = new HttpMediaTypeNotAcceptableException("expected");
 
-        ModelAndView mv = resolver.doResolveException(request, response, null, expected);
+        final ModelAndView mv = resolver.doResolveException(request, response, null, expected);
 
         assertThat(mv, notNullValue());
         verify(response).sendError(SC_NOT_ACCEPTABLE);

@@ -27,13 +27,13 @@ import java.io.IOException;
 public class RequestLoggingFilter implements OrderedFilter {
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain filterChain) throws IOException, ServletException {
         final long start = System.currentTimeMillis();
         try {
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
             if (servletRequest instanceof HttpServletRequest) {
-                HttpServletRequest request = (HttpServletRequest) servletRequest;
+                final HttpServletRequest request = (HttpServletRequest) servletRequest;
                 log.info("{}={}{};client={};status={};duration={}",
                         request.getMethod(),
                         request.getRequestURI(),

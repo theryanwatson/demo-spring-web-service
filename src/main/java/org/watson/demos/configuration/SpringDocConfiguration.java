@@ -183,7 +183,7 @@ public class SpringDocConfiguration {
         return isEmpty(arrayTypes) ? null : new ModelConverter() {
             @Override
             public Schema<?> resolve(final AnnotatedType originalType, final ModelConverterContext context, final Iterator<ModelConverter> chain) {
-                Optional<AnnotatedType> iterableType = Optional.ofNullable(originalType)
+                final Optional<AnnotatedType> iterableType = Optional.ofNullable(originalType)
                         .map(AnnotatedType::getType)
                         .map(Json.mapper()::constructType)
                         .filter(jt -> arrayTypes.contains(jt.getRawClass()))
@@ -212,7 +212,7 @@ public class SpringDocConfiguration {
      * <li>[Optional] {@code springdoc.shared-errors=INTERNAL_SERVER_ERROR}</li>
      */
     @Bean
-    public OpenApiCustomiser sharedErrors(Schema<?> errorSchema,
+    public OpenApiCustomiser sharedErrors(final Schema<?> errorSchema,
                                           @Value("${springdoc.shared-errors:}") final Set<HttpStatus> sharedErrors) {
         return openApi -> {
             openApi.schema(errorSchema.getName(), errorSchema);
@@ -259,7 +259,7 @@ public class SpringDocConfiguration {
                 .addProperty("trace", new StringSchema());
     }
 
-    private String buildDescription(BuildProperties properties) {
+    private String buildDescription(final BuildProperties properties) {
         final String description = Stream.of(
                         Optional.ofNullable(properties.get("description"))
                                 .map(StringUtils::trimToNull)
