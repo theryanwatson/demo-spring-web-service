@@ -1,6 +1,10 @@
 package org.watson.demos.configuration;
 
+import io.swagger.v3.core.converter.AnnotatedType;
+import io.swagger.v3.core.converter.ModelConverter;
+import io.swagger.v3.core.converter.ModelConverterContextImpl;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Schema;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.info.BuildProperties;
@@ -11,12 +15,13 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.annotation.Resource;
 import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.watson.demos.configuration.SpringDocConfiguration.*;
 import static org.watson.demos.configuration.SpringDocConfigurationTest.*;
 
@@ -29,6 +34,7 @@ import static org.watson.demos.configuration.SpringDocConfigurationTest.*;
         SPRING_DOC_PREFIX_LICENSE + ".name=" + LICENSE_NAME,
         SPRING_DOC_PREFIX_LICENSE + ".url=" + LICENSE_URL,
         SPRING_DOC_PREFIX_INFO + ".terms-of-service=" + TERM_OF_SERVICE,
+        "springdoc.use-array-schema=org.watson.demos.configuration.SpringDocConfigurationTest.TestArrayType"
 })
 @EnableConfigurationProperties
 @ContextConfiguration(classes = {BuildPropertiesTestConfiguration.class, SpringDocConfiguration.class})
@@ -48,6 +54,8 @@ class SpringDocConfigurationTest {
 
     @Resource
     private OpenAPI openAPI;
+    @Resource
+    private ModelConverter arraySchemaModelConverter;
 
     @Test
     void openApiInfoMatches() {
@@ -82,8 +90,18 @@ class SpringDocConfigurationTest {
     }
 
     @Test
-    void iterableModelConverter() {
-        // TODO How to verify behavior?
+    void arraySchemaModelConverter_convertsSupportedType() {
+        Schema<?> schema = arraySchemaModelConverter.resolve(new AnnotatedType(TestArrayType.class), new ModelConverterContextImpl(List.of()), Collections.emptyIterator());
+
+        assertThat(schema, notNullValue());
+        assertThat(schema.getType(), is("array"));
+    }
+
+    @Test
+    void arraySchemaModelConverter_doesNotConvertOtherTypes() {
+        Schema<?> schema = arraySchemaModelConverter.resolve(new AnnotatedType(TestUnmappedType.class), new ModelConverterContextImpl(List.of()), Collections.emptyIterator());
+
+        assertThat(schema, nullValue());
     }
 
     @Test
@@ -103,4 +121,8 @@ class SpringDocConfigurationTest {
             }});
         }
     }
+
+    static class TestArrayType {}
+
+    static class TestUnmappedType {}
 }

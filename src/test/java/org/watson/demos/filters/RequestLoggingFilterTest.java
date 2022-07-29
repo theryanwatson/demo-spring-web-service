@@ -128,6 +128,11 @@ class RequestLoggingFilterTest {
         verify(mockChain).doFilter(mockRequest, mockResponse);
     }
 
+    @Test
+    void getOrder_isSet() {
+        assertThat(filter.getOrder(), notNullValue());
+    }
+
     private void assertLogLineMatches(String logLinePrefix, HttpServletRequest request, ServletResponse response) throws IOException, ServletException {
         assertThat(listAppender.list, hasSize(1));
         assertThat(listAppender.list.get(0).getLevel(), is(Level.INFO));
