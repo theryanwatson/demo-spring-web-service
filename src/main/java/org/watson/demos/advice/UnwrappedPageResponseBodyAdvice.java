@@ -50,6 +50,7 @@ public class UnwrappedPageResponseBodyAdvice implements ResponseBodyAdvice<Page<
     private static final Pattern PAGE_NUMBER_REPLACE_PATTERN = Pattern.compile(PAGE_NUMBER_REPLACE_TOKEN, Pattern.LITERAL);
 
     private final String pageParameter;
+    private final Pattern pageQueryPattern;
     private final String pageQueryReplaceToken;
     private final int indexOffset;
     private final String pageSizeHeader;
@@ -63,6 +64,7 @@ public class UnwrappedPageResponseBodyAdvice implements ResponseBodyAdvice<Page<
         final boolean isOneIndexed = webProperties.getPageable().isOneIndexedParameters();
 
         this.pageParameter = webProperties.getPageable().getPageParameter() + "=";
+        this.pageQueryPattern = Pattern.compile(pageParameter + "[^&]*");
         this.pageQueryReplaceToken = pageParameter + PAGE_NUMBER_REPLACE_TOKEN;
         this.indexOffset = isOneIndexed ? 1 : 0;
 
@@ -122,8 +124,8 @@ public class UnwrappedPageResponseBodyAdvice implements ResponseBodyAdvice<Page<
         final String uriString = uri.toString();
         if (!uriString.contains("?")) { // No Query Parameters, add page token first
             return uriString + "?" + pageQueryReplaceToken;
-        } else if (uri.getQuery().contains(pageParameter)) { // Replace 'page=\d+' parameter with page token
-            return uriString.replaceFirst("" + pageParameter + "\\d+", "" + pageQueryReplaceToken);
+        } else if (uri.getQuery().contains(pageParameter)) { // Replace page=* query parameter with page token
+            return pageQueryPattern.matcher(uriString).replaceFirst(pageQueryReplaceToken);
         } else { // No Page Parameter, add page token last
             return uriString + "&" + pageQueryReplaceToken;
         }
