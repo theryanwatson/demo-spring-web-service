@@ -23,7 +23,7 @@ import java.util.Set;
  * Extends DefaultHandlerExceptionResolver to unwrap Exceptions and associate Exceptions with Error Codes.
  *
  * <li>[Optional] {@code server.error.unwrapped-exceptions=full.path.to.Exception,full.path.to.OtherException}</li>
- * <li>[Optional] {@code springdoc.info.external-documentation.description=server.error.exception-codes={'full.path.to.Exception': 400, 'full.path.to.OtherException': 404}}</li>
+ * <li>[Optional] {@code springdoc.info.external-documentation.description=server.error.exception-codes={"full.path.to.Exception": 400, "full.path.to.OtherException": 404}}</li>
  */
 @ConditionalOnExpression("#{'${server.error.unwrapped-exceptions:}' != '' || '${server.error.exception-codes:}' != ''}")
 @Slf4j

@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeAttribute;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
@@ -246,24 +247,39 @@ public class SpringDocConfiguration {
      */
     @ConditionalOnMissingBean
     @Bean
-    Schema<?> errorSchema() {
-        return new Schema<>().name("Error")
-                .addProperty("error", new StringSchema())
-                .addProperty("errors", new ArraySchema().items(new StringSchema()))
-                .addProperty("exception", new StringSchema())
-                .addProperty("message", new StringSchema())
+    Schema<?> errorSchema(@Value("${server.error.include-exception:false}") final boolean includeException,
+                          @Value("${server.error.include-message:never}") final IncludeAttribute includeMessage,
+                          @Value("${server.error.include-stacktrace:never}") final IncludeAttribute includeTrace,
+                          @Value("${server.error.include-binding-errors:never}") final IncludeAttribute includeErrors) {
+
+        final Schema<?> schema = new Schema<>().name("Error")
                 .addProperty("path", new StringSchema())
-                .addProperty("requestId", new StringSchema())
+                .addProperty("error", new StringSchema())
                 .addProperty("status", new IntegerSchema())
-                .addProperty("timestamp", new StringSchema().format("date-time"))
-                .addProperty("trace", new StringSchema());
+                .addProperty("timestamp", new StringSchema().format("date-time"));
+
+        if (includeException) {
+            schema.addProperty("exception", new StringSchema());
+        }
+        setOptionalProperty(schema, "message", includeMessage);
+        setOptionalProperty(schema, "errors", includeErrors);
+        setOptionalProperty(schema, "trace", includeTrace);
+
+        return schema;
+    }
+
+    private void setOptionalProperty(final Schema<?> schema, final String key, final IncludeAttribute includeAttribute) {
+        if (!IncludeAttribute.NEVER.equals(includeAttribute)) {
+            schema.addProperty(key, new StringSchema()
+                    .description(IncludeAttribute.ON_PARAM.equals(includeAttribute) ? "Optional on parameter" : null));
+        }
     }
 
     private String buildDescription(final BuildProperties properties) {
         final String description = Stream.of(
                         Optional.ofNullable(properties.get("description"))
                                 .map(StringUtils::trimToNull)
-                                .map(d -> "<div><b>" + d + "</b></div>"),
+                                .map(d -> "<div>" + d + "</div>"),
                         Optional.ofNullable(properties.getTime())
                                 .map(t -> "<div>Created: " + t + "</div>"))
                 .filter(Optional::isPresent)

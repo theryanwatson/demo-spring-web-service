@@ -7,12 +7,12 @@
 <body>
 <ul>
     <li th:utext="|path: ${path}|" th:if="${path ne null}"></li>
-    <li th:utext="|status: ${status}|" th:if="${status ne null}"></li>
     <li th:utext="|error: ${error}|" th:if="${error ne null}"></li>
-    <li th:utext="|message: ${message}|" th:if="${message ne null}"></li>
-    <li th:utext="|requestId: ${requestId}|" th:if="${requestId ne null}"></li>
+    <li th:utext="|status: ${status}|" th:if="${status ne null}"></li>
     <li th:utext="|timestamp: ${timestamp}|" th:if="${timestamp ne null}"></li>
+    <li th:utext="|requestId: ${requestId}|" th:if="${requestId ne null}"></li>
     <li th:utext="|exception: ${exception}|" th:if="${exception ne null}"></li>
+    <li th:utext="|message: ${message}|" th:if="${message ne null}"></li>
     <li th:utext="|errors: ${errors}|" th:if="${errors ne null}"></li>
     <li th:utext="|trace: ${trace}|" th:if="${trace ne null}"></li>
 </ul>

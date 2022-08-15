@@ -13,14 +13,13 @@ import org.springframework.web.server.ResponseStatusException;
 import org.watson.demos.models.Greeting;
 import org.watson.demos.models.GreetingProbe;
 import org.watson.demos.services.GreetingService;
-import org.watson.demos.validation.constraints.ValidPageable;
 
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
-@RequiredArgsConstructor
 @Validated
+@RequiredArgsConstructor
 @Timed(value = "http.greetings.requests", extraTags = {"version", "1"}, description = "/greetings")
 @RequestMapping(path = "${server.rest.path.root}/greetings", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
@@ -34,12 +33,12 @@ public class GreetingController {
     }
 
     @GetMapping
-    public Page<Greeting> getGreetings(final GreetingProbe probe, @ValidPageable @ParameterObject final Pageable pageable) {
+    public Page<Greeting> getGreetings(final GreetingProbe probe, @ParameterObject final Pageable pageable) {
         return service.getAll(probe, pageable);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Collection<Greeting> createGreetings(final @RequestBody Collection<Greeting> greetings) {
+    public Collection<Greeting> createGreetings(@RequestBody final Collection<Greeting> greetings) {
         return service.createAll(greetings);
     }
 
