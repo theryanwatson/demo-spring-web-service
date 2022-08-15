@@ -14,6 +14,7 @@ import org.watson.demos.models.Greeting;
 import org.watson.demos.models.GreetingProbe;
 import org.watson.demos.services.GreetingService;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
@@ -33,12 +34,12 @@ public class GreetingController {
     }
 
     @GetMapping
-    public Page<Greeting> getGreetings(final GreetingProbe probe, @ParameterObject final Pageable pageable) {
+    public Page<Greeting> getGreetings(@Valid final GreetingProbe probe, @ParameterObject final Pageable pageable) {
         return service.getAll(probe, pageable);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Collection<Greeting> createGreetings(@RequestBody final Collection<Greeting> greetings) {
+    public Collection<Greeting> createGreetings(@RequestBody final Collection<@Valid Greeting> greetings) {
         return service.createAll(greetings);
     }
 
