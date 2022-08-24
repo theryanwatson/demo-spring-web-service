@@ -15,7 +15,7 @@ public class FilterConfiguration {
     public FilterRegistrationBean<RequestLoggingFilter> requestLoggingRegistrationBean(@Value("${server.rest.path.root:}") final String rootPath) {
         final RequestLoggingFilter filter = new RequestLoggingFilter();
         return new FilterRegistrationBean<>(filter) {{
-            addUrlPatterns(rootPath + "/*");
+            addUrlPatterns((rootPath + "/*").replace("//", "/"));
             setOrder(filter.getOrder());
         }};
     }
