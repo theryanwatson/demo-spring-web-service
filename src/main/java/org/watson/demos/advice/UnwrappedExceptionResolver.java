@@ -38,10 +38,10 @@ public class UnwrappedExceptionResolver extends DefaultHandlerExceptionResolver 
     private final Set<Class<? extends Throwable>> unwrappedExceptions;
     private final Map<Class<? extends Throwable>, Integer> exceptionErrorCodes;
 
-    public UnwrappedExceptionResolver(@Value("${server.error.unwrapped-exceptions:}") final Set<Class<? extends Throwable>> unwrappedExceptions,
-                                      @Value("#{${server.error.exception-codes:{:}}}") final Map<Class<? extends Throwable>, Integer> exceptionErrorCodes) {
-        this.unwrappedExceptions = unwrappedExceptions;
-        this.exceptionErrorCodes = exceptionErrorCodes;
+    public UnwrappedExceptionResolver(@Value("${server.error.unwrapped-exceptions}") final Optional<Set<Class<? extends Throwable>>> unwrappedExceptions,
+                                      @Value("#{${server.error.exception-codes}}") final Optional<Map<Class<? extends Throwable>, Integer>> exceptionErrorCodes) {
+        this.unwrappedExceptions = unwrappedExceptions.orElse(Set.of());
+        this.exceptionErrorCodes = exceptionErrorCodes.orElse(Map.of());
         setOrder(Ordered.LOWEST_PRECEDENCE);
         setWarnLogCategory(getClass().getName());
     }
