@@ -22,11 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.startsWith;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -96,8 +93,8 @@ class RequestLoggingFilterTest {
         final ServletRequest wrongRequestType = mock(ServletRequest.class);
         filter.doFilter(wrongRequestType, mockResponse, mockChain);
 
-        assertThat(listAppender.list, hasSize(1));
-        assertThat(listAppender.list.get(0).getLevel(), is(Level.WARN));
+        assertThat(listAppender.list).hasSize(1);
+        assertThat(listAppender.list.get(0).getLevel()).isEqualTo(Level.WARN);
         verify(mockChain).doFilter(wrongRequestType, mockResponse);
     }
 
@@ -120,23 +117,23 @@ class RequestLoggingFilterTest {
 
         filter.doFilter(mockRequest, mockResponse, mockChain);
 
-        assertThat(listAppender.list, hasSize(1));
+        assertThat(listAppender.list).hasSize(1);
         final String message = listAppender.list.get(0).getFormattedMessage();
         final int duration = Integer.parseInt(message.substring(message.lastIndexOf('=') + 1));
 
-        assertThat(duration, allOf(greaterThanOrEqualTo(expectedDuration), lessThanOrEqualTo(expectedDuration + 20)));
+        assertThat(duration).isBetween(expectedDuration, expectedDuration + 20);
         verify(mockChain).doFilter(mockRequest, mockResponse);
     }
 
     @Test
     void getOrder_isSet() {
-        assertThat(filter.getOrder(), notNullValue());
+        assertThat(filter.getOrder()).isNotNull();
     }
 
     private void assertLogLineMatches(final String logLinePrefix, final HttpServletRequest request, final ServletResponse response) throws IOException, ServletException {
-        assertThat(listAppender.list, hasSize(1));
-        assertThat(listAppender.list.get(0).getLevel(), is(Level.INFO));
-        assertThat(listAppender.list.get(0).getFormattedMessage(), startsWith(logLinePrefix));
+        assertThat(listAppender.list).hasSize(1);
+        assertThat(listAppender.list.get(0).getLevel()).isEqualTo(Level.INFO);
+        assertThat(listAppender.list.get(0).getFormattedMessage()).startsWith(logLinePrefix);
 
         verify(mockChain).doFilter(request, response);
     }

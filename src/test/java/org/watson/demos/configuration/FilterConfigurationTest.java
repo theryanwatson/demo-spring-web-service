@@ -9,8 +9,7 @@ import org.watson.demos.filters.RequestLoggingFilter;
 
 import java.util.Optional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class FilterConfigurationTest {
 
@@ -21,42 +20,39 @@ class FilterConfigurationTest {
     @ParameterizedTest
     void urlPatternMatchesWildcardPaths(final String path) {
         final FilterRegistrationBean<?> actual = configuration.requestLoggingRegistrationBean(Optional.ofNullable(path));
-        assertThat(actual, notNullValue());
-        assertThat(actual.getUrlPatterns(), hasSize(1));
-        assertThat(actual.getUrlPatterns(), contains((path == null ? "" : path) + "/*"));
+        assertUrlPatternsContains(actual, (path == null ? "" : path) + "/*");
     }
 
     @ValueSource(strings = {"/", "/some-path/", "/this/is/a/nested/path/"})
     @ParameterizedTest
     void urlPatternMatchesTrailingSlashWildcardPaths(final String path) {
         final FilterRegistrationBean<?> actual = configuration.requestLoggingRegistrationBean(Optional.of(path));
-        assertThat(actual, notNullValue());
-        assertThat(actual.getUrlPatterns(), hasSize(1));
-        assertThat(actual.getUrlPatterns(), contains(path + "*"));
+        assertUrlPatternsContains(actual, path + "*");
     }
 
     @ValueSource(strings = {"some-path", "this/is/a/nested/path"})
     @ParameterizedTest
     void urlPatternMatchesMissingLeadingSlashWildcardPaths(final String path) {
         final FilterRegistrationBean<?> actual = configuration.requestLoggingRegistrationBean(Optional.of(path));
-        assertThat(actual, notNullValue());
-        assertThat(actual.getUrlPatterns(), hasSize(1));
-        assertThat(actual.getUrlPatterns(), contains("/" + path + "/*"));
+        assertUrlPatternsContains(actual, "/" + path + "/*");
     }
 
     @ValueSource(strings = {" ", " /some-path ", " /this/is/a/nested/path "})
     @ParameterizedTest
     void urlPatternMatchesTrimmedPaths(final String path) {
         final FilterRegistrationBean<?> actual = configuration.requestLoggingRegistrationBean(Optional.of(path));
-        assertThat(actual, notNullValue());
-        assertThat(actual.getUrlPatterns(), hasSize(1));
-        assertThat(actual.getUrlPatterns(), contains(path.trim() + "/*"));
+        assertUrlPatternsContains(actual, path.trim() + "/*");
     }
 
     @Test
     void orderMatchesFilterOrder() {
         final FilterRegistrationBean<?> actual = configuration.requestLoggingRegistrationBean(Optional.of("/any-path"));
-        assertThat(actual, notNullValue());
-        assertThat(actual.getOrder(), is(new RequestLoggingFilter().getOrder()));
+        assertThat(actual).isNotNull();
+        assertThat(actual.getOrder()).isEqualTo(new RequestLoggingFilter().getOrder());
+    }
+
+    private static void assertUrlPatternsContains(final FilterRegistrationBean<?> actual, final String path) {
+        assertThat(actual).isNotNull();
+        assertThat(actual.getUrlPatterns()).containsExactly(path);
     }
 }

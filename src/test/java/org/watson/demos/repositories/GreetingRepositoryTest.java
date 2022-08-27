@@ -12,9 +12,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 class GreetingRepositoryTest {
@@ -34,8 +32,8 @@ class GreetingRepositoryTest {
 
         final Page<Greeting> actual = repository.findAll(Pageable.unpaged());
 
-        assertThat(actual, notNullValue());
-        assertThat(actual.getTotalElements(), is((long) TEST_VALUES.size()));
-        assertThat(actual.get().collect(Collectors.toList()), is(TEST_VALUES));
+        assertThat(actual).isNotNull();
+        assertThat(actual.getTotalElements()).isEqualTo(TEST_VALUES.size());
+        assertThat(actual.get().collect(Collectors.toList())).isEqualTo(TEST_VALUES);
     }
 }
