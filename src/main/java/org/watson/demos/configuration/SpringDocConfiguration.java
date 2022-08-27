@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeAttribute;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.info.BuildProperties;
@@ -36,7 +37,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  * environment variables, etc. All properties are optional.
  *
  * <li>The optional configuration properties change/fix the behavior of the library:</li><ul>
- * <li>{@code springdoc.shared-errors=} {@link #sharedErrors(Schema, Set)}</li>
+ * <li>{@code springdoc.shared-errors=} {@link #sharedErrorsCustomizer(Schema, Set)}</li>
  * <li>{@code springdoc.simple-types=} {@link SpringDocConfiguration#SpringDocConfiguration(Set)}</li>
  * <li>{@code springdoc.use-array-schema=} {@link #arraySchemaModelConverter(Set)}</li>
  * </ul>
@@ -52,6 +53,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  * <li>{@code springdoc.info.terms-of-service=}</li>
  * </ul>
  */
+@ConditionalOnWebApplication
 @Configuration(proxyBeanMethods = false)
 public class SpringDocConfiguration {
     static final String SPRING_DOC_PREFIX_INFO = "springdoc.info";
@@ -213,8 +215,8 @@ public class SpringDocConfiguration {
      * <li>[Optional] {@code springdoc.shared-errors=INTERNAL_SERVER_ERROR}</li>
      */
     @Bean
-    public OpenApiCustomiser sharedErrors(final Schema<?> errorSchema,
-                                          @Value("${springdoc.shared-errors:}") final Set<HttpStatus> sharedErrors) {
+    public OpenApiCustomiser sharedErrorsCustomizer(final Schema<?> errorSchema,
+                                                    @Value("${springdoc.shared-errors:}") final Set<HttpStatus> sharedErrors) {
         return openApi -> {
             openApi.schema(errorSchema.getName(), errorSchema);
 
@@ -232,6 +234,7 @@ public class SpringDocConfiguration {
 
                 Stream.of(openApi)
                         .map(OpenAPI::getPaths)
+                        .filter(Objects::nonNull)
                         .map(Map::values)
                         .flatMap(Collection::stream)
                         .map(PathItem::readOperations)
@@ -247,12 +250,13 @@ public class SpringDocConfiguration {
      */
     @ConditionalOnMissingBean
     @Bean
-    Schema<?> errorSchema(@Value("${server.error.include-exception:false}") final boolean includeException,
+    Schema<?> errorSchema(@Value("${springdoc.error.schema-name:Error}") final String name,
+                          @Value("${server.error.include-exception:false}") final boolean includeException,
                           @Value("${server.error.include-message:never}") final IncludeAttribute includeMessage,
                           @Value("${server.error.include-stacktrace:never}") final IncludeAttribute includeTrace,
                           @Value("${server.error.include-binding-errors:never}") final IncludeAttribute includeErrors) {
 
-        final Schema<?> schema = new Schema<>().name("Error")
+        final Schema<?> schema = new Schema<>().name(name)
                 .addProperty("path", new StringSchema())
                 .addProperty("error", new StringSchema())
                 .addProperty("status", new IntegerSchema())

@@ -3,6 +3,7 @@ package org.watson.demos.advice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.core.Ordered;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -23,8 +24,9 @@ import java.util.Set;
  * Extends DefaultHandlerExceptionResolver to unwrap Exceptions and associate Exceptions with Error Codes.
  *
  * <li>[Optional] {@code server.error.unwrapped-exceptions=full.path.to.Exception,full.path.to.OtherException}</li>
- * <li>[Optional] {@code springdoc.info.external-documentation.description=server.error.exception-codes={"full.path.to.Exception": 400, "full.path.to.OtherException": 404}}</li>
+ * <li>[Optional] {@code server.error.exception-codes={"full.path.to.Exception": 400, "full.path.to.OtherException": 404}}</li>
  */
+@ConditionalOnWebApplication
 @ConditionalOnExpression("#{'${server.error.unwrapped-exceptions:}' != '' || '${server.error.exception-codes:}' != ''}")
 @Slf4j
 @Component
