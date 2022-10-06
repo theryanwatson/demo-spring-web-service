@@ -6,12 +6,13 @@ degrease development time, increase testability, increase code and API consisten
 for running in containers like Docker. 
 
 ### Built with:
-* [Spring Boot Maven](https://docs.spring.io/spring-boot/docs/2.7.1/maven-plugin/reference/html/) as a framework.
-* [Spring Web](https://docs.spring.io/spring-boot/docs/2.7.1/reference/htmlsingle/#web) for the RESTful web layer.
-* [Spring Data JPA](https://docs.spring.io/spring-boot/docs/2.7.1/reference/htmlsingle/#data.sql.jpa-and-spring-data) for paging support and repository layer.
-* [Validation](https://docs.spring.io/spring-boot/docs/2.7.1/reference/htmlsingle/#io.validation) for input validation handling.
-* [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/2.7.1/reference/htmlsingle/#actuator) for monitoring, health, info, etc.
-* [Prometheus](https://docs.spring.io/spring-boot/docs/2.7.1/reference/htmlsingle/#actuator.metrics.export.prometheus) for graphing/alerting integration.
+* [Spring Boot Maven](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/html/) as a framework
+* [Spring Web](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#web) for the RESTful web layer
+* [Spring Data JPA](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#data.sql.jpa-and-spring-data) for paging support and repository layer
+* [Validation](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#io.validation) for input validation handling
+* [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#actuator) for monitoring, health, info, etc
+* [Prometheus](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#actuator.metrics.export.prometheus) for graphing/alerting integration
+* [Thymeleaf](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#web.servlet.spring-mvc.template-engines) for page templating, like `/error`
 
 
 ## Guide for creating a pragmatic RESTful API:
@@ -64,6 +65,18 @@ To use Paged results in a pragmatic way, this project includes
 by the property `server.response.unwrap.page=true`, then enable the developer to return a `Page<SomeModelClass>` from the controller endpoint method. The resulting response will
 contain a JSON array of `SomeModelClass` and Link headers to control paging, in accordance with [RFC 8288](https://datatracker.ietf.org/doc/html/rfc8288).
 
+
+## Error Responses
+This application uses Thymeleaf to create the `/error` [page template](src/main/resources/templates), featuring dynamic fields.
+Spring Web Services can be configured to allow for additional dynamically added fields in error responses:
+* `server.error.include-message=on_param`
+* `server.error.include-binding-errors=on_param`
+* `server.error.include-stacktrace=on_param`
+
+The optional fields can be added to the error response by adding query parameters to the request.
+* `&trace&message&errors`
+
+
 ## Additional Resources
 
 ### Spring Tutorials:
@@ -71,5 +84,6 @@ contain a JSON array of `SomeModelClass` and Link headers to control paging, in 
 * [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
 * [Building a RESTful Web Service with Spring Boot Actuator](https://spring.io/guides/gs/actuator-service/)
 * [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
+* [Handling Form Submission](https://spring.io/guides/gs/handling-form-submission/)
 * [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
 * [Validation](https://spring.io/guides/gs/validating-form-input/)
