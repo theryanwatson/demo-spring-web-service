@@ -1,0 +1,103 @@
+{
+  "properties": [
+    {
+      "name": "server.error.exception-codes",
+      "type": "java.lang.String",
+      "description": "Map from Full-class-path to HTTP Error Code. {key:value}.",
+      "sourceType": "org.watson.demos.advice.UnwrappedExceptionResolver"
+    },
+    {
+      "name": "server.error.unwrapped-exceptions",
+      "type": "java.util.Collection<java.lang.Class>",
+      "description": "Full-class-path to Exceptions that will be unwrapped.",
+      "sourceType": "org.watson.demos.advice.UnwrappedExceptionResolver"
+    },
+    {
+      "name": "server.rest.path.root",
+      "type": "java.lang.String",
+      "description": "Server root path for all logged endpoints.",
+      "sourceType": "org.watson.demos.configuration.FilterConfiguration",
+      "defaultValue": "/"
+    },
+    {
+      "name": "server.response.unwrap.page",
+      "type": "java.lang.Boolean",
+      "description": "Enable to convert http response object from Page to Collection.",
+      "sourceType": "org.watson.demos.converters.UnwrappedPageHttpMessageConverter"
+    },
+    {
+      "name": "spring.data.web.pageable.header-prefix",
+      "type": "java.lang.String",
+      "description": "Prefix used for all page-related response headers; [x]Size, [x]Sort, [x]Index, [x]Total-Pages, [x]Total-Elements.",
+      "sourceType": "org.watson.demos.advice.UnwrappedPageResponseBodyAdvice",
+      "defaultValue": "Page-"
+    },
+    {
+      "name": "springdoc.error.schema-name",
+      "type": "java.lang.String",
+      "description": "Name to be used for the Error schema.",
+      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration",
+      "defaultValue": "Error"
+    },
+    {
+      "name": "springdoc.info.contact.email",
+      "type": "java.lang.String",
+      "description": "OpenAPI documentation Contact Email address.",
+      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+    },
+    {
+      "name": "springdoc.info.contact.name",
+      "type": "java.lang.String",
+      "description": "OpenAPI documentation Contact Name text.",
+      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+    },
+    {
+      "name": "springdoc.info.contact.url",
+      "type": "java.lang.String",
+      "description": "OpenAPI documentation Contact URL.",
+      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+    },
+    {
+      "name": "springdoc.info.external-documentation.description",
+      "type": "java.lang.String",
+      "description": "OpenAPI documentation External Documentation Description.",
+      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+    },
+    {
+      "name": "springdoc.info.external-documentation.url",
+      "type": "java.lang.String",
+      "description": "OpenAPI documentation External Documentation URL.",
+      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+    },
+    {
+      "name": "springdoc.info.license.name",
+      "type": "java.lang.String",
+      "description": "OpenAPI documentation License Name.",
+      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+    },
+    {
+      "name": "springdoc.info.license.url",
+      "type": "java.lang.String",
+      "description": "OpenAPI documentation License URL.",
+      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+    },
+    {
+      "name": "springdoc.info.terms-of-service",
+      "type": "java.lang.String",
+      "description": "OpenAPI documentation Terms-of-Service text.",
+      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+    },
+    {
+      "name": "springdoc.shared-errors",
+      "type": "java.lang.String",
+      "description": "HttpStatus error codes for all documented paths.",
+      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+    },
+    {
+      "name": "springdoc.use-array-schema",
+      "type": "java.lang.String",
+      "description": "Comma-delimited-list of Full-class-path of classes to document as an array.",
+      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+    }
+  ]
+}
