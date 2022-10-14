@@ -35,7 +35,7 @@ public class GreetingService {
 
     public Collection<Greeting> createAll(@NonNull final Iterable<Greeting> greetings) {
         return StreamSupport.stream(repository.saveAll(greetings).spliterator(), false)
-                .collect(Collectors.toList());
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public void deleteAll(@NonNull final Iterable<UUID> ids) {

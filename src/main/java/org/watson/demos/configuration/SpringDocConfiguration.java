@@ -225,7 +225,7 @@ public class SpringDocConfiguration {
 
                 final Map<String, ApiResponse> errorApiResponses = sharedErrors.stream()
                         .filter(HttpStatus::isError)
-                        .collect(Collectors.toMap(
+                        .collect(Collectors.toUnmodifiableMap(
                                 status -> String.valueOf(status.value()),
                                 status -> new ApiResponse()
                                         .description(status.getReasonPhrase())

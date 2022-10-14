@@ -33,7 +33,7 @@ class GreetingControllerTest {
                     .content("some-content-" + id)
                     .locale(Locale.getDefault())
                     .build())
-            .collect(Collectors.toList());
+            .collect(Collectors.toUnmodifiableList());
 
     @MockBean
     private GreetingService service;
@@ -69,7 +69,7 @@ class GreetingControllerTest {
                 .map(i -> Greeting.builder()
                         .content(i + "-some-content")
                         .build())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toUnmodifiableSet());
 
         assertThat(controller.createGreetings(input)).containsExactlyElementsOf(TEST_CONTENT);
 
@@ -92,7 +92,7 @@ class GreetingControllerTest {
     void delete_passesThroughToService() {
         final Set<UUID> input = IntStream.range(0, 3).boxed()
                 .map(i -> UUID.randomUUID())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toUnmodifiableSet());
 
         controller.deleteGreetings(input);
 

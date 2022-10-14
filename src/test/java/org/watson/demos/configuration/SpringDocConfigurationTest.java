@@ -161,7 +161,7 @@ class SpringDocConfigurationTest {
                 .map(PathItem::readOperations)
                 .flatMap(Collection::stream)
                 .map(Operation::getResponses)
-                .collect(Collectors.toList());
+                .collect(Collectors.toUnmodifiableList());
 
         assertThat(apiResponses).allSatisfy(response -> assertThat(response).containsOnlyKeys(SHARED_ERROR_CODES));
 

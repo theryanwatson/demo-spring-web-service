@@ -40,7 +40,7 @@ class GreetingRepositoryTest {
 
         assertThat(actual).isNotNull();
         assertThat(actual.getTotalElements()).isEqualTo(TEST_VALUES.size());
-        assertThat(actual.get().collect(Collectors.toList())).containsExactlyInAnyOrderElementsOf(TEST_VALUES);
+        assertThat(actual.get().collect(Collectors.toUnmodifiableList())).containsExactlyInAnyOrderElementsOf(TEST_VALUES);
     }
 
     @Test
@@ -100,6 +100,6 @@ class GreetingRepositoryTest {
     private List<Greeting> saveAll(final Greeting... entries) {
         return StreamSupport
                 .stream(repository.saveAll(Arrays.asList(entries)).spliterator(), false)
-                .collect(Collectors.toList());
+                .collect(Collectors.toUnmodifiableList());
     }
 }
