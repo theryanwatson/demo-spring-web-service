@@ -34,12 +34,12 @@ import java.util.regex.Pattern;
  * <li>"Page-Index" || "Page-Number" (If {@link SpringDataWebProperties.Pageable#isOneIndexedParameters()} is true)</li>
  * <li>"Page-Total-Pages"</li>
  * <li>"Page-Total-Elements"</li>
- * <li>{@value HttpHeaders#LINK} (In accordance with <a href="https://tools.ietf.org/html/rfc5988#page-6">RFC 5988</a>, with relation types (rel) of self, next, prev, and last)</li>
+ * <li>{@value HttpHeaders#LINK} (In accordance with <a href="https://www.rfc-editor.org/rfc/rfc5988#section-5">RFC 5988, Section 5</a>, with relation types (rel) of self, next, prev, and last)</li>
  * </ul>
  * <strong>Configure the header prefix from default {@value #DEFAULT_PAGE_PREFIX} (or set to empty-string) by setting Spring property:</strong><blockquote>spring.data.web.pageable.header-prefix=New-Prefix-</blockquote>
  *
  * @see UnwrappedPageHttpMessageConverter
- * @see <a href="https://tools.ietf.org/html/rfc5988#page-6">RFC 5988</a>
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc5988#section-5">RFC 5988, Section 5</a>
  */
 @ConditionalOnWebApplication
 @ConditionalOnBean(UnwrappedPageHttpMessageConverter.class)
