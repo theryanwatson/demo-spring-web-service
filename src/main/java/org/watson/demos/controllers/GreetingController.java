@@ -38,6 +38,7 @@ public class GreetingController {
         return service.getAll(probe, pageable);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Collection<Greeting> createGreetings(@RequestBody final Collection<@Valid Greeting> greetings) {
         return service.createAll(greetings);
