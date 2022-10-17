@@ -3,6 +3,7 @@ package org.watson.demos.advice;
 import lombok.Builder;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -12,8 +13,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration;
+import org.springframework.boot.context.annotation.UserConfigurations;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -120,7 +124,50 @@ class LocationResponseBodyAdviceTest {
     @Test
     void beanNotCreatedIfNotWebApplication() {
         new ApplicationContextRunner().withPropertyValues("spring.config.location=classpath:empty.properties")
+                .withConfiguration(UserConfigurations.of(LocationResponseBodyAdvice.class))
                 .run(context -> assertThat(context).doesNotHaveBean(LocationResponseBodyAdvice.class));
+    }
+
+    @MethodSource
+    @ParameterizedTest
+    void beforeBodyWrite_managesBeingMisconfigured(final String headerSize, final String reserveSize, final String charLength, int expectedSize, final Collection<ExampleIdentifiable> input) {
+        new WebApplicationContextRunner()
+                .withConfiguration(UserConfigurations.of(LocationResponseBodyAdvice.class))
+                .withBean("conversionService", ApplicationConversionService.class)
+                .withPropertyValues(
+                        "server.max-http-header-size=" + headerSize,
+                        "identifiable.location.header-reserve-size=" + reserveSize,
+                        "identifiable.location.path.prefix=",
+                        "identifiable.location.id.character.length=" + charLength
+                )
+                .run(context -> {
+                    assertThat(context).getBean(LocationResponseBodyAdvice.class).isNotNull();
+                    context.getBean(LocationResponseBodyAdvice.class)
+                            .beforeBodyWrite(input, null, null, null, request, response);
+
+                    if (expectedSize == 0) {
+                        assertThat(headers.get(HttpHeaders.CONTENT_LOCATION)).isNullOrEmpty();
+                    } else {
+                        assertThat(headers.get(HttpHeaders.CONTENT_LOCATION)).hasSize(expectedSize);
+                    }
+                });
+    }
+
+    static Stream<Arguments> beforeBodyWrite_managesBeingMisconfigured() {
+        final int inputSize = 150;
+        final Named<List<ExampleIdentifiable>> input = IntStream.range(0, inputSize).boxed()
+                .map(i -> ExampleIdentifiable.builder().id(i).value("value " + i))
+                .map(ExampleIdentifiable.ExampleIdentifiableBuilder::build)
+                .collect(Collectors.collectingAndThen(Collectors.toUnmodifiableList(), i -> Named.of("ExampleIdentifiable[" + inputSize + "]", i)));
+        return Stream.of(
+                Arguments.of("8KB", "3KB", "36", 142, input), // Default config
+                Arguments.of("1KB", "1KB", "1", 0, input), // 0 Header Space
+                Arguments.of("1KB", "2KB", "1", 0, input), // Negative Header Space
+                Arguments.of("2KB", "1KB", "0", 0, input), // Divide by 0
+                Arguments.of("1KB", "0KB", "-1", 0, input), // Negative value
+                Arguments.of("1000TB", "0KB", "1", inputSize, input), // Large value
+                Arguments.of(String.valueOf(Integer.MAX_VALUE * (inputSize - 1L)), "0KB", String.valueOf(Integer.MAX_VALUE), inputSize - 1, input) // Large values
+        );
     }
 
     @Builder

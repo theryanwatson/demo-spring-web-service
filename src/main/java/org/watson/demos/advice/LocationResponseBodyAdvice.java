@@ -12,6 +12,7 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +29,9 @@ import java.util.stream.Collectors;
 /**
  * Adds id location data to the response header.<p/>
  * Assumes that if content created by a POST to {@code /some-content}, then the GET call will be {@code /some-content/{id}}.
- * Configurable with {@code identifiable.location.path.prefix=}, defaults to "/".<p/>
+ * Configurable with optional {@code identifiable.location.path.prefix=}, defaults to "/".<p/>
+ * Reads optional properties to calculate the max number of ids that can be added to the header;
+ * {@code server.max-http-header-size=} defaults to "8KB" and optional {@code identifiable.location.id.character.length=} defaults to 36 (UUID length).<p/>
  * Supports {@link RestController} methods that return a {@link Collection} of supported types with a {@link ResponseStatus} of {@link HttpStatus#CREATED}.
  * <ul>
  * <li>{@value HttpHeaders#CONTENT_LOCATION} header is set with a <strong>relative URI</strong> when multiple items are returned. (See <a href=https://www.rfc-editor.org/rfc/rfc2616#section-14.14>RFC 2616, Section 14.14</a>)</li>
@@ -43,9 +46,14 @@ import java.util.stream.Collectors;
 public class LocationResponseBodyAdvice implements ResponseBodyAdvice<Collection<? extends Identifiable>> {
 
     private final String prefix;
+    private final long maxHeaderCount;
 
-    public LocationResponseBodyAdvice(@Value("${identifiable.location.path.prefix:/}") final String prefix) {
+    public LocationResponseBodyAdvice(@Value("${server.max-http-header-size:8KB}") final DataSize maxHeaderSize,
+                                      @Value("${identifiable.location.header-reserve-size:3KB}") final DataSize headerReserveSize,
+                                      @Value("${identifiable.location.path.prefix:/}") final String prefix,
+                                      @Value("${identifiable.location.id.character.length:36}") final int idCharacterLength) {
         this.prefix = prefix;
+        this.maxHeaderCount = calculateMaxHeaderCount(maxHeaderSize.toBytes() - headerReserveSize.toBytes(), prefix.length() + idCharacterLength);
     }
 
     @Override
@@ -69,7 +77,9 @@ public class LocationResponseBodyAdvice implements ResponseBodyAdvice<Collection
                         .map(relative -> toAbsoluteLocationUri(relative, request.getURI()))
                         .ifPresent(response.getHeaders()::setLocation);
             } else {
-                relativePaths.forEach(relative -> response.getHeaders().add(HttpHeaders.CONTENT_LOCATION, relative));
+                relativePaths.stream()
+                        .limit(maxHeaderCount)
+                        .forEach(relative -> response.getHeaders().add(HttpHeaders.CONTENT_LOCATION, relative));
             }
         }
         return body;
@@ -102,5 +112,9 @@ public class LocationResponseBodyAdvice implements ResponseBodyAdvice<Collection
                         .map(ResolvableType::toClass)
                         .filter(Identifiable.class::isAssignableFrom)
                         .isPresent();
+    }
+
+    private long calculateMaxHeaderCount(final long availableBytes, final long bytesPerIdentifier) {
+        return availableBytes < bytesPerIdentifier || bytesPerIdentifier < 1 ? 0 : Math.min(availableBytes / bytesPerIdentifier, Integer.MAX_VALUE);
     }
 }

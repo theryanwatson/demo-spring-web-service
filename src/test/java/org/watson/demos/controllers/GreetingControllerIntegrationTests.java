@@ -1,7 +1,9 @@
 package org.watson.demos.controllers;
 
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -36,9 +38,10 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@AutoConfigureTestDatabase
+@Tag("Integration")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@AutoConfigureTestDatabase
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class GreetingControllerIntegrationTests {
     private static final String VERSION_1 = "v1";
@@ -75,8 +78,8 @@ class GreetingControllerIntegrationTests {
 
     Stream<Arguments> postGreetings() {
         return Stream.of(
-                Arguments.of(TEST_VALUES.subList(0, 1)),
-                Arguments.of(TEST_VALUES.subList(1, TEST_VALUES.size()))
+                Arguments.of(Named.of("Greeting[1]", TEST_VALUES.subList(0, 1))),
+                Arguments.of(Named.of("Greeting[" + (TEST_VALUES.size() - 1) + "]", TEST_VALUES.subList(1, TEST_VALUES.size())))
         );
     }
 
