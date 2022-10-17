@@ -3,11 +3,13 @@ package org.watson.demos.controllers;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -21,6 +23,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.unit.DataSize;
 import org.watson.demos.models.Greeting;
 
 import java.time.ZonedDateTime;
@@ -34,16 +37,23 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @AutoConfigureTestDatabase
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class GreetingControllerIntegrationTests {
     private static final String VERSION_1 = "v1";
+    private static final Locale[] AVAILABLE_LOCALES = Locale.getAvailableLocales();
     private static final List<Greeting> TEST_VALUES = IntStream.range(0, 10).boxed()
             .map(i -> Greeting.builder()
-                    .locale(Locale.getAvailableLocales()[i])
+                    .locale(AVAILABLE_LOCALES[i % AVAILABLE_LOCALES.length])
                     .content("integrate " + i))
             .map(Greeting.GreetingBuilder::build)
             .collect(Collectors.toUnmodifiableList());
+
+    @Value("${spring.data.web.pageable.max-page-size:2000}")
+    private int maxPageSize;
+    @Value("${server.max-http-header-size:8KB}")
+    private DataSize maxHeaderSize;
 
     @LocalServerPort
     private int port;
@@ -63,7 +73,7 @@ class GreetingControllerIntegrationTests {
         assertActualMatchesExpected(actual.getBody(), expected);
     }
 
-    static Stream<Arguments> postGreetings() {
+    Stream<Arguments> postGreetings() {
         return Stream.of(
                 Arguments.of(TEST_VALUES.subList(0, 1)),
                 Arguments.of(TEST_VALUES.subList(1, TEST_VALUES.size()))
@@ -81,13 +91,13 @@ class GreetingControllerIntegrationTests {
         assertThat(actual.getHeaders().get(HttpHeaders.LINK)).isNotEmpty();
     }
 
-    static Stream<Arguments> getGreetings() {
+    Stream<Arguments> getGreetings() {
         return Stream.of(
                 Arguments.of(Pageable.unpaged()),
                 Arguments.of(PageRequest.ofSize(1)),
-                Arguments.of(PageRequest.of(1, TEST_VALUES.size() / 2, Sort.by("locale", "content"))),
-                Arguments.of(PageRequest.of(2, TEST_VALUES.size() / 3, Sort.Direction.DESC, "content")),
-                Arguments.of(PageRequest.of(3, TEST_VALUES.size() / 4))
+                Arguments.of(PageRequest.of(1, Math.min(TEST_VALUES.size() / 2, maxPageSize), Sort.by("locale", "content"))),
+                Arguments.of(PageRequest.of(2, Math.min(TEST_VALUES.size() / 3, maxPageSize), Sort.Direction.DESC, "content")),
+                Arguments.of(PageRequest.of(3, Math.min(TEST_VALUES.size() / 4, maxPageSize)))
         );
     }
 
@@ -121,10 +131,11 @@ class GreetingControllerIntegrationTests {
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 
-    static Stream<Arguments> deleteGreeting() {
+    Stream<Arguments> deleteGreeting() {
+        final int maxUrlLength = Math.toIntExact((maxHeaderSize.toBytes() - 200) / 40); // (Max-Request size - room for headers and base URL) / Length of "&id={UUID}" (4+36)
         return Stream.of(
                 Arguments.of(PageRequest.ofSize(1)),
-                Arguments.of(PageRequest.ofSize(TEST_VALUES.size()))
+                Arguments.of(PageRequest.ofSize(IntStream.of(TEST_VALUES.size(), maxPageSize, maxUrlLength).min().orElse(1)))
         );
     }
 
@@ -187,7 +198,7 @@ class GreetingControllerIntegrationTests {
         }
     }
 
-    private static String buildQueryString(final Pageable pageable) {
+    private String buildQueryString(final Pageable pageable) {
         final List<String> queryParameters = new ArrayList<>();
         if (pageable.isPaged()) {
             queryParameters.add("page=" + pageable.getPageNumber());
