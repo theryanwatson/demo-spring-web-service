@@ -18,7 +18,10 @@ import java.lang.reflect.InvocationTargetException;
 
 import static javax.servlet.http.HttpServletResponse.SC_NOT_ACCEPTABLE;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.watson.demos.advice.UnwrappedExceptionResolver.ERROR_EXCEPTION_ATTRIBUTES;
 
 @SpringBootTest(classes = UnwrappedExceptionResolver.class, properties = {
@@ -108,6 +111,14 @@ class UnwrappedExceptionResolverTest {
 
         assertThat(mv).isNotNull();
         verify(response).sendError(SC_NOT_ACCEPTABLE);
+    }
+
+    @Test
+    void beanCreatedPropertiesSet() {
+        contextRunner.withPropertyValues(
+                        "server.error.unwrapped-exceptions=",
+                        "server.error.exception-codes={\"java.lang.RuntimeException\":400}")
+                .run(context -> assertThat(context).getBean(UnwrappedExceptionResolver.class).isNotNull());
     }
 
     @Test

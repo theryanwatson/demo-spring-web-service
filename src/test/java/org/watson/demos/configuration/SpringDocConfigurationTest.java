@@ -29,15 +29,33 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.annotation.Resource;
 import java.time.Instant;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.watson.demos.configuration.SpringDocConfiguration.*;
-import static org.watson.demos.configuration.SpringDocConfigurationTest.*;
+import static org.watson.demos.configuration.SpringDocConfiguration.SPRING_DOC_PREFIX_CONTACT;
+import static org.watson.demos.configuration.SpringDocConfiguration.SPRING_DOC_PREFIX_EXTERNAL_DOCUMENTATION;
+import static org.watson.demos.configuration.SpringDocConfiguration.SPRING_DOC_PREFIX_INFO;
+import static org.watson.demos.configuration.SpringDocConfiguration.SPRING_DOC_PREFIX_LICENSE;
+import static org.watson.demos.configuration.SpringDocConfigurationTest.BuildPropertiesTestConfiguration;
+import static org.watson.demos.configuration.SpringDocConfigurationTest.CONTACT_EMAIL;
+import static org.watson.demos.configuration.SpringDocConfigurationTest.CONTACT_NAME;
+import static org.watson.demos.configuration.SpringDocConfigurationTest.CONTACT_URL;
+import static org.watson.demos.configuration.SpringDocConfigurationTest.ERROR_SCHEMA_NAME;
+import static org.watson.demos.configuration.SpringDocConfigurationTest.EXTERNAL_DOC_DESC;
+import static org.watson.demos.configuration.SpringDocConfigurationTest.EXTERNAL_DOC_URL;
+import static org.watson.demos.configuration.SpringDocConfigurationTest.LICENSE_NAME;
+import static org.watson.demos.configuration.SpringDocConfigurationTest.LICENSE_URL;
+import static org.watson.demos.configuration.SpringDocConfigurationTest.SHARED_ERRORS_STRING;
+import static org.watson.demos.configuration.SpringDocConfigurationTest.TERM_OF_SERVICE;
 
 @SpringBootTest(classes = SpringDocConfiguration.class, properties = {
         SPRING_DOC_PREFIX_CONTACT + ".email=" + CONTACT_EMAIL,
@@ -183,6 +201,14 @@ class SpringDocConfigurationTest {
         contextRunner.withPropertyValues("spring.config.location=classpath:empty.properties")
                 .withBean("errorSchema", Schema.class, Schema::new)
                 .run(context -> assertThatThrownBy(() -> context.getBean(clazz)).isInstanceOf(NoSuchBeanDefinitionException.class));
+    }
+
+    @ValueSource(classes = {OpenAPI.class, Info.class})
+    @ParameterizedTest
+    void beansCreatedPropertiesSet(final Class<?> clazz) {
+        contextRunner.withUserConfiguration(BuildPropertiesTestConfiguration.class)
+                .withBean("errorSchema", Schema.class, Schema::new)
+                .run(context -> assertThat(context).getBean(clazz).isNotNull());
     }
 
     @TestConfiguration
