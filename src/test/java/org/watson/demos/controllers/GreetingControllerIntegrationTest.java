@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureTestDatabase
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class GreetingControllerIntegrationTests {
+class GreetingControllerIntegrationTest {
     private static final String VERSION_1 = "v1";
     private static final Locale[] AVAILABLE_LOCALES = Locale.getAvailableLocales();
     private static final List<Greeting> TEST_VALUES = IntStream.range(0, 10).boxed()
