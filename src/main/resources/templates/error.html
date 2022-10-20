@@ -1,20 +1,38 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <title th:text="|${status} ${error}|">Error</title>
-    <meta charset="utf-8"/>
+    <title th:text="|${#objects.nullSafe(status,'')} ${#objects.nullSafe(error,'')}|"
+           th:if="${status != null || error != null}">Error</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link th:href="@{/css/template.css}" rel="stylesheet"/>
 </head>
 <body>
-<ul>
-    <li th:utext="|path: ${path}|" th:if="${path ne null}"></li>
-    <li th:utext="|error: ${error}|" th:if="${error ne null}"></li>
-    <li th:utext="|status: ${status}|" th:if="${status ne null}"></li>
-    <li th:utext="|timestamp: ${timestamp}|" th:if="${timestamp ne null}"></li>
-    <li th:utext="|requestId: ${requestId}|" th:if="${requestId ne null}"></li>
-    <li th:utext="|exception: ${exception}|" th:if="${exception ne null}"></li>
-    <li th:utext="|message: ${message}|" th:if="${message ne null}"></li>
-    <li th:utext="|errors: ${errors}|" th:if="${errors ne null}"></li>
-    <li th:utext="|trace: ${trace}|" th:if="${trace ne null}"></li>
-</ul>
+<h4 th:text="${#dates.formatISO(timestamp)}" th:if="${timestamp != null}"></h4>
+<h4 th:text="${requestId}" th:if="${requestId != null}"></h4>
+<h4 th:text="|${#objects.nullSafe(status,'')} - ${#objects.nullSafe(error,'')}|" th:if="${status != null || error != null}"></h4>
+
+<div th:if="${trace != null}">
+    <pre th:text="${trace}"></pre>
+</div>
+
+<div th:if="${trace == null}"
+     th:with="enableMessage=${@environment.getProperty('server.error.include-message') == 'on_param'},
+              enableStacktrace=${@environment.getProperty('server.error.include-stacktrace') == 'on_param'},
+              enableBindingErrors=${@environment.getProperty('server.error.include-binding-errors') == 'on_param'}">
+    <span style="display:contents" th:text="|${exception}:|" th:if="${exception != null}"></span>
+    <span style="display:contents" th:text="${message}" th:if="${message != null}"></span>
+
+    <span style="display:inline-block" th:text="${errors}" th:if="${errors != null}"></span>
+
+    <p th:if="${status != 404 && param.message == null && param.trace == null && param.errors == null}"
+       th:unless="${enableMessage == false && enableStacktrace == false && enableBindingErrors == false}"
+       th:with="currentUrl=(${path + '?' + #strings.defaultString(#httpServletRequest.queryString, '')})">
+        Re-submit request and display
+        <a th:href="@{${currentUrl}(message='')}" th:if="${enableMessage == true && message == null}">exception message</a>
+        <a th:href="@{${currentUrl}(errors='')}" th:if="${enableBindingErrors == true && errors == null}">binding errors</a>
+        <a th:href="@{${currentUrl}(trace='')}" th:if="${enableStacktrace == true}">stacktrace</a>
+    </p>
+</div>
+
 </body>
 </html>
