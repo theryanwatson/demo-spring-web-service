@@ -1,0 +1,23 @@
+body {
+    color: #222;
+    background: #fff;
+}
+
+a {
+    color: #0033cc;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        color: #ddd;
+        background: #202020;
+    }
+
+    body a {
+        color: #009fff;
+    }
+}
+
+pre {
+    white-space: pre-wrap;
+}
