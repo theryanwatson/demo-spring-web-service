@@ -4,6 +4,7 @@
     <title th:text="|${#objects.nullSafe(status,'')} ${#objects.nullSafe(error,'')}|"
            th:if="${status != null || error != null}">Error</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link th:href="@{/img/favicon.ico}" rel="shortcut icon" type="image/ico">
     <link th:href="@{/css/template.css}" rel="stylesheet"/>
 </head>
 <body>
