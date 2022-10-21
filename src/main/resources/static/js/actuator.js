@@ -48,12 +48,6 @@ fetch("/actuator/info")
     })
     .catch(handleErrors);
 
-function insertHtmlBeforeEnd(elementId, html) {
-    document
-        .getElementById(elementId)
-        .insertAdjacentHTML("beforeend", html);
-}
-
 function entriesToNestedList(data) {
     return entriesToList(Object.entries(data)
         .map(([k, v]) => [k, typeof v === "object" && Object.keys(v).length > 0 ? entriesToNestedList(v) : v])
@@ -75,10 +69,17 @@ function entriesToList(entries, keyValueMapper = ([k, v]) => `${k}: ${v}`) {
     return html.join("");
 }
 
-function toTitleCase([k, v], toLowerTail = false) {
-    return [k.replace(/\w\S*/g, function (txt) {
-        return txt.charAt(0).toUpperCase() + (toLowerTail ? txt.substring(1).toLowerCase() : txt.substring(1));
-    }), v];
+function insertHtmlBeforeEnd(elementId, html) {
+    document
+        .getElementById(elementId)
+        .insertAdjacentHTML("beforeend", html);
+}
+
+function toTitleCase([k, v]) {
+    return [k.replace(/([A-Z]+)/g, " $1")
+        .split(/[ ._-]/)
+        .map(w => w.charAt(0).toUpperCase() + w.substring(1))
+        .join(" "), v];
 }
 
 function throwOrJson(response) {
