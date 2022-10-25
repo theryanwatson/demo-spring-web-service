@@ -20,10 +20,9 @@
      th:with="enableMessage=${@environment.getProperty('server.error.include-message') == 'on_param'},
               enableStacktrace=${@environment.getProperty('server.error.include-stacktrace') == 'on_param'},
               enableBindingErrors=${@environment.getProperty('server.error.include-binding-errors') == 'on_param'}">
-    <span style="display:contents" th:text="|${exception}:|" th:if="${exception != null}"></span>
-    <span style="display:contents" th:text="${message}" th:if="${message != null}"></span>
-
-    <span style="display:inline-block" th:text="${errors}" th:if="${errors != null}"></span>
+    <pre style="display:contents" th:text="|${exception}:|" th:if="${exception != null}"></pre>
+    <pre style="display:contents" th:text="${message}" th:if="${message != null}"></pre>
+    <pre style="display:inline-block" th:text="${errors}" th:if="${errors != null}"></pre>
 
     <p th:if="${status != 404 && param.message == null && param.trace == null && param.errors == null}"
        th:unless="${enableMessage == false && enableStacktrace == false && enableBindingErrors == false}"
