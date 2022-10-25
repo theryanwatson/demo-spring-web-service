@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <title>Demo Spring Web Service</title>
+    <title th:text="${#objects.nullSafe(@environment.getProperty('info.build.description'), 'Demo Spring Web Service')}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link th:href="@{/img/favicon.ico}" rel="shortcut icon" type="image/ico"/>
     <link th:href="@{/css/template.css}" rel="stylesheet"/>
 </head>
 <body>
-<h2>Demo Spring Web Service</h2>
+<h2 th:text="${#objects.nullSafe(@environment.getProperty('info.build.description'), 'Demo Spring Web Service')}"></h2>
 
 <details open>
     <summary>Documentation</summary>
