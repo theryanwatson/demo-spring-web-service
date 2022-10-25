@@ -62,6 +62,7 @@ function entriesToHrefList(entries) {
 function entriesToList(entries, keyValueMapper = ([k, v]) => `${k}: ${v}`) {
     let html = ["<ul>"];
     entries
+        .sort()
         .map(keyValueMapper)
         .map(a => `<li>${a}</li>`)
         .forEach(a => html.push(a));
