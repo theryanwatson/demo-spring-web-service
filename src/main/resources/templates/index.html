@@ -8,31 +8,36 @@
 </head>
 <body>
 <h2>Demo Spring Web Service</h2>
-<h3>Documentation</h3>
-<ul>
-    <li><a th:href="@{/redoc.html}">Redoc</a></li>
-    <li><a th:href="@{/swagger-ui/index.html}">Swagger</a></li>
-</ul>
 
-<div>
-    <h3>Actuator Endpoints</h3>
+<details open>
+    <summary>Documentation</summary>
+    <div title="Documentation">
+        <ul>
+            <li><a th:href="@{/redoc.html}">Redoc</a></li>
+            <li><a th:href="@{/swagger-ui/index.html}">Swagger</a></li>
+        </ul>
+    </div>
+</details>
+
+<details>
+    <summary>Actuator Endpoints</summary>
     <div title="Actuator Endpoints" id="actuator-links"></div>
-</div>
+</details>
 
-<div>
-    <h3>Actuator Health</h3>
+<details>
+    <summary>Actuator Health</summary>
     <div title="Actuator Health" id="actuator-health"></div>
-</div>
+</details>
 
-<div>
-    <h3>Actuator Metrics</h3>
+<details>
+    <summary>Actuator Metrics</summary>
     <div title="Actuator Metrics" id="actuator-metrics" style="column-count: 3;"></div>
-</div>
+</details>
 
-<div>
-    <h3>Actuator Info</h3>
+<details>
+    <summary>Actuator Info</summary>
     <div title="Actuator Info" id="actuator-info"></div>
-</div>
+</details>
 
 <script th:src="@{/js/actuator.js}"></script>
 </body>

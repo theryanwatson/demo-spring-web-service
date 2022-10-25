@@ -21,3 +21,8 @@ a {
 pre {
     white-space: pre-wrap;
 }
+
+details summary {
+    font-size: larger;
+    cursor: pointer;
+}
