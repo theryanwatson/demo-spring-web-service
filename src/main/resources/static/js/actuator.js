@@ -6,7 +6,7 @@ fetch("/actuator")
             .map(([k, v]) => [k === "self" ? "actuator" : k, v])
             .map(([k, v]) => [k, v["href"]])
             .filter(([_, v]) => !v.includes("{"))
-            .map(toTitleCase);
+            .map(entryToTitleCase);
     })
     .then(entriesToHrefList)
     .then(function (html) {
@@ -32,7 +32,7 @@ fetch("/actuator/health")
         return Object.entries(data["components"])
             .filter(([_, v]) => v.hasOwnProperty("status"))
             .map(([k, v]) => [k, v["status"]])
-            .map(toTitleCase);
+            .map(entryToTitleCase);
     })
     .then(entriesToList)
     .then(function (html) {
@@ -51,7 +51,7 @@ fetch("/actuator/info")
 function entriesToNestedList(data) {
     return entriesToList(Object.entries(data)
         .map(([k, v]) => [k, typeof v === "object" && Object.keys(v).length > 0 ? entriesToNestedList(v) : v])
-        .map(toTitleCase)
+        .map(entryToTitleCase)
     );
 }
 
@@ -75,11 +75,12 @@ function insertHtmlBeforeEnd(elementId, html) {
         .insertAdjacentHTML("beforeend", html);
 }
 
-function toTitleCase([k, v]) {
-    return [k.replace(/([A-Z]+)/g, " $1")
+function entryToTitleCase([k, v]) {
+    let title = k.replace(/([A-Z]+)/g, " $1")
         .split(/[ ._-]/)
         .map(w => w.charAt(0).toUpperCase() + w.substring(1))
-        .join(" "), v];
+        .join(" ");
+    return [title.length < 3 || !title.match(/[aeiou ]/i) ? title.toUpperCase() : title, v];
 }
 
 function throwOrJson(response) {
