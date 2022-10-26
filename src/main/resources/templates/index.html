@@ -1,13 +1,23 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <title th:text="${#objects.nullSafe(@environment.getProperty('info.build.description'), 'Demo Spring Web Service')}"></title>
+    <title th:text="${@environment.getProperty('info.build.description', 'Demo Web Service')}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link th:href="@{/img/favicon.ico}" rel="shortcut icon" type="image/ico"/>
     <link th:href="@{/css/template.css}" rel="stylesheet"/>
 </head>
 <body>
-<h2 th:text="${#objects.nullSafe(@environment.getProperty('info.build.description'), 'Demo Spring Web Service')}"></h2>
+<h2 id="page-title" th:text="${@environment.getProperty('info.build.description', 'Demo Web Service')}">Demo</h2>
+<span style="display:block; margin-bottom: 2%" class="status">Status:
+    <span style="display:contents" class="status unknown" title="Live State" id="live-state">UNKNOWN</span>
+    <span style="display:contents" class="status unknown" title="Ready State" id="ready-state">UNKNOWN</span>
+    <span style="display:contents" class="status unknown" title="Healthy State" id="healthy-state">UNKNOWN</span>
+</span>
+
+<details open>
+    <summary>Health</summary>
+    <div title="Health" id="actuator-health"></div>
+</details>
 
 <details open>
     <summary>Documentation</summary>
@@ -19,24 +29,20 @@
     </div>
 </details>
 
-<details>
-    <summary>Actuator Endpoints</summary>
-    <div title="Actuator Endpoints" id="actuator-links"></div>
+<details th:if="${@environment.getProperty('management.endpoints.web.exposure.include', '').matches('.*([*]|info).*')}">
+    <summary>Info</summary>
+    <div title="Info" id="actuator-info"></div>
+</details>
+
+<details
+        th:if="${@environment.getProperty('management.endpoints.web.exposure.include', '').matches('.*([*]|metrics).*')}">
+    <summary>Metrics</summary>
+    <div title="Metrics" id="actuator-metrics" style="column-count: 3;"></div>
 </details>
 
 <details>
-    <summary>Actuator Health</summary>
-    <div title="Actuator Health" id="actuator-health"></div>
-</details>
-
-<details>
-    <summary>Actuator Metrics</summary>
-    <div title="Actuator Metrics" id="actuator-metrics" style="column-count: 3;"></div>
-</details>
-
-<details>
-    <summary>Actuator Info</summary>
-    <div title="Actuator Info" id="actuator-info"></div>
+    <summary>Actuator Json Endpoints</summary>
+    <div title="Actuator Json Endpoints" id="actuator-endpoints"></div>
 </details>
 
 <script th:src="@{/js/actuator.js}"></script>

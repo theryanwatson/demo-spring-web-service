@@ -4,7 +4,23 @@ body {
 }
 
 a {
-    color: #0033cc;
+    color: blue;
+}
+
+.status {
+    font-weight: bold;
+}
+
+.status.unknown {
+    color: blue;
+}
+
+.status.up {
+    color: green;
+}
+
+.status.down {
+    color: red;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -15,6 +31,18 @@ a {
 
     body a {
         color: #009fff;
+    }
+
+    .status.unknown {
+        color: #009fff;
+    }
+
+    .status.up {
+        color: darkgreen;
+    }
+
+    .status.down {
+        color: darkred;
     }
 }
 

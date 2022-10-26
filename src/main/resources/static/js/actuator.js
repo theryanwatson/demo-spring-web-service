@@ -1,5 +1,42 @@
-fetch("/actuator")
-    .then(throwOrJson)
+fetchJson("/actuator/health/liveness")
+    .then(setStatusElement("live-state", "LIVE"))
+    .catch(handleErrors);
+
+fetchJson("/actuator/health/readiness")
+    .then(setStatusElement("ready-state", "READY", "NOT READY"))
+    .catch(handleErrors);
+
+fetchJson("/actuator/health")
+    .then(setStatusElement("healthy-state", "HEALTHY", "UNHEALTHY"))
+    .catch(handleErrors);
+
+fetchJson("/actuator/health")
+    .then(function (data) {
+        return Object.entries(data["components"])
+            .filter(([_, v]) => v.hasOwnProperty("status"))
+            .map(([k, v]) => [k, v["status"]])
+            .map(([k, v]) => [k, `<a href="actuator/health/${k}">${v}</a>`])
+            .map(entryToTitleCase);
+    })
+    .then(entriesToList)
+    .then(insertHtmlBeforeEnd("actuator-health"))
+    .catch(handleErrors);
+
+fetchJsonOrThrow("/actuator/metrics")
+    .then(function (data) {
+        return data["names"]
+            .map(m => [m, `/actuator/metrics/${m}`]);
+    })
+    .then(entriesToHrefList)
+    .then(insertHtmlBeforeEnd("actuator-metrics"))
+    .catch(handleErrors);
+
+fetchJsonOrThrow("/actuator/info")
+    .then(entriesToNestedList)
+    .then(insertHtmlBeforeEnd("actuator-info"))
+    .catch(handleErrors);
+
+fetchJsonOrThrow("/actuator")
     .then(function (data) {
         return Object.entries(data["_links"])
             .filter(([_, v]) => v.hasOwnProperty("href"))
@@ -9,44 +46,31 @@ fetch("/actuator")
             .map(entryToTitleCase);
     })
     .then(entriesToHrefList)
-    .then(function (html) {
-        insertHtmlBeforeEnd("actuator-links", html);
-    })
+    .then(insertHtmlBeforeEnd("actuator-endpoints"))
     .catch(handleErrors);
 
-fetch("/actuator/metrics")
-    .then(throwOrJson)
-    .then(function (data) {
-        return data["names"]
-            .map(m => [m, `/actuator/metrics/${m}`]);
-    })
-    .then(entriesToHrefList)
-    .then(function (html) {
-        insertHtmlBeforeEnd("actuator-metrics", html);
-    })
-    .catch(handleErrors);
+function setStatusElement(elementId, upText = "UP", downText = "DOWN", unknownText = "UNKNOWN") {
+    return function (data) {
+        let element = document.getElementById(elementId);
+        element.classList.remove("up", "down", "unknown");
 
-fetch("/actuator/health")
-    .then(throwOrJson)
-    .then(function (data) {
-        return Object.entries(data["components"])
-            .filter(([_, v]) => v.hasOwnProperty("status"))
-            .map(([k, v]) => [k, v["status"]])
-            .map(entryToTitleCase);
-    })
-    .then(entriesToList)
-    .then(function (html) {
-        insertHtmlBeforeEnd("actuator-health", html);
-    })
-    .catch(handleErrors);
-
-fetch("/actuator/info")
-    .then(throwOrJson)
-    .then(entriesToNestedList)
-    .then(function (html) {
-        insertHtmlBeforeEnd("actuator-info", html);
-    })
-    .catch(handleErrors);
+        if (data.hasOwnProperty("status")) {
+            if (data["status"] === "UP") {
+                element.classList.add("up");
+                element.innerText = upText;
+            } else if (data["status"] === "DOWN") {
+                element.classList.add("down");
+                element.innerText = downText;
+            } else {
+                element.classList.add("unknown");
+                element.innerText = data["status"];
+            }
+        } else {
+            element.classList.add("unknown");
+            element.innerText = unknownText;
+        }
+    };
+}
 
 function entriesToNestedList(data) {
     return entriesToList(Object.entries(data)
@@ -70,10 +94,12 @@ function entriesToList(entries, keyValueMapper = ([k, v]) => `${k}: ${v}`) {
     return html.join("");
 }
 
-function insertHtmlBeforeEnd(elementId, html) {
-    document
-        .getElementById(elementId)
-        .insertAdjacentHTML("beforeend", html);
+function insertHtmlBeforeEnd(elementId) {
+    return function (html) {
+        document
+            .getElementById(elementId)
+            .insertAdjacentHTML("beforeend", html);
+    }
 }
 
 function entryToTitleCase([k, v]) {
@@ -84,11 +110,21 @@ function entryToTitleCase([k, v]) {
     return [title.length < 3 || !title.match(/[aeiou ]/i) ? title.toUpperCase() : title, v];
 }
 
-function throwOrJson(response) {
-    if (!response.ok) {
-        throw Error(response.statusText);
-    }
-    return response.json();
+function fetchJson(input) {
+    return fetch(input)
+        .then(function (response) {
+            return response.json();
+        });
+}
+
+function fetchJsonOrThrow(input) {
+    return fetch(input)
+        .then(function (response) {
+            if (!response.ok) {
+                throw Error(response.statusText);
+            }
+            return response.json();
+        });
 }
 
 function handleErrors(error) {
