@@ -14,36 +14,34 @@
     <span style="display:contents" class="status unknown" title="Healthy State" id="healthy-state">UNKNOWN</span>
 </span>
 
-<details open>
+<details open title="Documentation" id="documentation-endpoints">
     <summary>Documentation</summary>
-    <div title="Documentation">
-        <ul>
-            <li><a th:target="_blank" th:href="@{/redoc.html}">Redoc</a></li>
-            <li><a th:target="_blank" th:href="@{/swagger-ui/index.html}">Swagger</a></li>
-        </ul>
-    </div>
+    <ul>
+        <li><a th:target="_blank" th:href="@{/redoc.html}">Redoc</a></li>
+        <li><a th:target="_blank" th:href="@{/swagger-ui/index.html}">Swagger</a></li>
+    </ul>
 </details>
 
-<details open>
+<details open title="Health" id="actuator-health">
     <summary>Health</summary>
-    <div title="Health" id="actuator-health"></div>
 </details>
 
-<details th:if="${@environment.getProperty('management.endpoints.web.exposure.include', '').matches('.*([*]|info).*')}"
+<details title="Info" id="actuator-info"
+         th:if="${@environment.getProperty('management.endpoints.web.exposure.include', '').matches('.*([*]|info).*')}"
          th:ontoggle="'javascript:populateInfo(\'actuator-info\')'">
     <summary>Info</summary>
-    <div title="Info" id="actuator-info"></div>
 </details>
 
-<details th:if="${@environment.getProperty('management.endpoints.web.exposure.include', '').matches('.*([*]|metrics).*')}"
+<details title="Metrics" id="actuator-metrics"
+         style="column-count: 3;"
+         th:if="${@environment.getProperty('management.endpoints.web.exposure.include', '').matches('.*([*]|metrics).*')}"
          th:ontoggle="'javascript:populateMetrics(\'actuator-metrics\')'">
     <summary>Metrics</summary>
-    <div title="Metrics" id="actuator-metrics" style="column-count: 3;"></div>
 </details>
 
-<details th:ontoggle="'javascript:populateEndpoints(\'actuator-endpoints\')'">
+<details title="Actuator Json Endpoints" id="actuator-endpoints"
+         th:ontoggle="'javascript:populateEndpoints(\'actuator-endpoints\')'">
     <summary>Actuator Json Endpoints</summary>
-    <div title="Actuator Json Endpoints" id="actuator-endpoints"></div>
 </details>
 
 <script th:src="@{/js/actuator.js}"></script>
