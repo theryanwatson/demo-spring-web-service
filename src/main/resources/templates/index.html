@@ -32,8 +32,7 @@
     <summary>Info</summary>
 </details>
 
-<details title="Metrics" id="actuator-metrics"
-         style="column-count: 3;"
+<details title="Metrics" id="actuator-metrics" class="columns"
          th:if="${@environment.getProperty('management.endpoints.web.exposure.include', '').matches('.*([*]|metrics).*')}"
          th:ontoggle="'javascript:populateMetrics(\'actuator-metrics\')'">
     <summary>Metrics</summary>

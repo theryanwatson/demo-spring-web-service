@@ -12,15 +12,24 @@ a {
 }
 
 .status.unknown {
-    color: blue;
+    color: darkblue;
 }
 
 .status.up {
-    color: green;
+    color: darkgreen;
 }
 
 .status.down {
-    color: red;
+    color: darkred;
+}
+
+.columns {
+    column-count: 3;
+}
+
+.columns ul {
+    margin-top: 0;
+    display: block;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -34,15 +43,15 @@ a {
     }
 
     .status.unknown {
-        color: #009fff;
+        color: steelblue;
     }
 
     .status.up {
-        color: darkgreen;
+        color: seagreen;
     }
 
     .status.down {
-        color: darkred;
+        color: #bb072e;
     }
 }
 
