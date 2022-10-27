@@ -26,17 +26,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.watson.demos.utilities.GeneratorTestUtility.generateGreetings;
 
 @SpringBootTest(classes = GreetingService.class)
 class GreetingServiceTest {
-    private static final List<Greeting> TEST_CONTENT = IntStream.range(0, 5).boxed()
-            .map(i -> UUID.randomUUID())
-            .map(id -> Greeting.builder()
-                    .id(id)
-                    .content("some-content-" + id)
-                    .locale(Locale.getDefault())
-                    .build())
-            .collect(Collectors.toUnmodifiableList());
+    private static final List<Greeting> TEST_CONTENT = generateGreetings("service-content");
 
     @MockBean
     private GreetingRepository repository;
@@ -59,11 +53,7 @@ class GreetingServiceTest {
     void create_passesThroughToRepository() {
         when(repository.saveAll(any())).thenReturn(TEST_CONTENT);
 
-        final Set<Greeting> input = IntStream.range(0, 3).boxed()
-                .map(i -> Greeting.builder()
-                        .content(i + "-some-content")
-                        .build())
-                .collect(Collectors.toUnmodifiableSet());
+        final List<Greeting> input = generateGreetings("create-service-content");
 
         assertThat(service.createAll(input)).containsExactlyElementsOf(TEST_CONTENT);
 

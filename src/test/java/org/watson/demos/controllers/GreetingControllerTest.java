@@ -13,7 +13,11 @@ import org.watson.demos.models.GreetingProbe;
 import org.watson.demos.services.GreetingService;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -22,18 +26,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.watson.demos.utilities.GeneratorTestUtility.generateGreetings;
 
 @SpringBootTest(classes = GreetingController.class)
 @Import(SimpleMeterRegistry.class)
 class GreetingControllerTest {
-    private static final List<Greeting> TEST_CONTENT = IntStream.range(0, 5).boxed()
-            .map(i -> UUID.randomUUID())
-            .map(id -> Greeting.builder()
-                    .id(id)
-                    .content("some-content-" + id)
-                    .locale(Locale.getDefault())
-                    .build())
-            .collect(Collectors.toUnmodifiableList());
+    private static final List<Greeting> TEST_CONTENT = generateGreetings("controller-content");
 
     @MockBean
     private GreetingService service;
@@ -65,11 +63,7 @@ class GreetingControllerTest {
     void create_passesThroughToService() {
         when(service.createAll(any())).thenReturn(TEST_CONTENT);
 
-        final Set<Greeting> input = IntStream.range(0, 3).boxed()
-                .map(i -> Greeting.builder()
-                        .content(i + "-some-content")
-                        .build())
-                .collect(Collectors.toUnmodifiableSet());
+        final List<Greeting> input = generateGreetings("create-controller-content");
 
         assertThat(controller.createGreetings(input)).containsExactlyElementsOf(TEST_CONTENT);
 

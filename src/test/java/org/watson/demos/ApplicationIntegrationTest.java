@@ -31,29 +31,24 @@ import org.watson.demos.models.Greeting;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.watson.demos.utilities.ConverterTestUtility.toQueryString;
+import static org.watson.demos.utilities.GeneratorTestUtility.generateGreetings;
 
-@Tag(IntegrationTestSuite.TAG)
+@Tag(IntegrationSuite.TAG)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureTestDatabase
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ApplicationIntegrationTest {
     private static final String VERSION_1 = "v1";
-    private static final Locale[] AVAILABLE_LOCALES = Locale.getAvailableLocales();
-    private static final List<Greeting> TEST_VALUES = IntStream.range(0, 10).boxed()
-            .map(i -> Greeting.builder()
-                    .locale(AVAILABLE_LOCALES[i % AVAILABLE_LOCALES.length])
-                    .content("integrate " + i))
-            .map(Greeting.GreetingBuilder::build)
-            .collect(Collectors.toUnmodifiableList());
+    private static final List<Greeting> TEST_VALUES = generateGreetings("application");
 
+    @Value("${spring.data.web.pageable.default-page-size:20}")
+    private int defaultPageSize;
     @Value("${spring.data.web.pageable.max-page-size:2000}")
     private int maxPageSize;
     @Value("${server.max-http-header-size:8KB}")
@@ -96,7 +91,7 @@ class ApplicationIntegrationTest {
         assertThat(actual.getHeaders().get(HttpHeaders.LINK)).isNotEmpty();
 
         final List<Greeting> actualBody = actual.getBody();
-        assertThat(actualBody).hasSize(pageable.getPageSize());
+        assertThat(actualBody).hasSize(Math.min(TEST_VALUES.size(), pageable.isPaged() ? pageable.getPageSize() : defaultPageSize));
         assertThat(actualBody).allSatisfy(entry -> assertThat(entry)
                 .satisfies(
                         a -> assertThat(a).isNotNull(),

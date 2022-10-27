@@ -26,7 +26,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"content", "locale"}))
 @Setter(AccessLevel.PROTECTED) // For @Entity

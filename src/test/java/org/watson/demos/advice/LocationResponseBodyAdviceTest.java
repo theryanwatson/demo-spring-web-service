@@ -1,6 +1,5 @@
 package org.watson.demos.advice;
 
-import lombok.Builder;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Named;
@@ -31,22 +30,17 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static org.watson.demos.utilities.GeneratorTestUtility.generateIdentifiable;
 
 @SpringBootTest(classes = LocationResponseBodyAdvice.class)
 @ImportAutoConfiguration(SpringDataWebAutoConfiguration.class)
 class LocationResponseBodyAdviceTest {
     private static final String FAKE_URI = "https://www.fake.fake:5150/things/cool";
-    private static final List<Identifiable> EXPECTED = IntStream.range(0, 11).boxed()
-            .map(i -> ExampleIdentifiable.builder()
-                    .id(i)
-                    .value("value " + i))
-            .map(ExampleIdentifiable.ExampleIdentifiableBuilder::build)
-            .collect(Collectors.toUnmodifiableList());
+    private static final List<Identifiable> EXPECTED = generateIdentifiable("advice", 11);
 
     private final HttpHeaders headers = new HttpHeaders();
 
@@ -91,7 +85,7 @@ class LocationResponseBodyAdviceTest {
 
     @Test
     void beforeBodyWrite_singleEntry_handlesNullId() {
-        advice.beforeBodyWrite(List.of(ExampleIdentifiable.builder().build()), null, null, null, request, response);
+        advice.beforeBodyWrite(List.of(() -> null), null, null, null, request, response);
 
         assertThat(headers.getLocation()).isNull();
         assertThat(headers.get(HttpHeaders.CONTENT_LOCATION)).isNull();
@@ -117,7 +111,7 @@ class LocationResponseBodyAdviceTest {
 
     static Stream<Arguments> beforeBodyWrite_invalid_writesNoLocationHeaders() {
         return Stream.of(
-                Arguments.of(List.of(ExampleIdentifiable.builder().build()))
+                Arguments.of(List.<Identifiable>of(() -> null))
         );
     }
 
@@ -130,7 +124,7 @@ class LocationResponseBodyAdviceTest {
 
     @MethodSource
     @ParameterizedTest
-    void beforeBodyWrite_managesBeingMisconfigured(final String headerSize, final String reserveSize, final String charLength, int expectedSize, final Collection<ExampleIdentifiable> input) {
+    void beforeBodyWrite_managesBeingMisconfigured(final String headerSize, final String reserveSize, final String charLength, int expectedSize, final Collection<Identifiable> input) {
         new WebApplicationContextRunner()
                 .withConfiguration(UserConfigurations.of(LocationResponseBodyAdvice.class))
                 .withBean("conversionService", ApplicationConversionService.class)
@@ -155,10 +149,7 @@ class LocationResponseBodyAdviceTest {
 
     static Stream<Arguments> beforeBodyWrite_managesBeingMisconfigured() {
         final int inputSize = 150;
-        final Named<List<ExampleIdentifiable>> input = IntStream.range(0, inputSize).boxed()
-                .map(i -> ExampleIdentifiable.builder().id(i).value("value " + i))
-                .map(ExampleIdentifiable.ExampleIdentifiableBuilder::build)
-                .collect(Collectors.collectingAndThen(Collectors.toUnmodifiableList(), i -> Named.of("ExampleIdentifiable[" + inputSize + "]", i)));
+        final Named<List<Identifiable>> input = Named.of("ExampleIdentifiable[" + inputSize + "]", generateIdentifiable("input", inputSize));
         return Stream.of(
                 Arguments.of("8KB", "3KB", "36", 142, input), // Default config
                 Arguments.of("1KB", "1KB", "1", 0, input), // 0 Header Space
@@ -168,13 +159,6 @@ class LocationResponseBodyAdviceTest {
                 Arguments.of("1000TB", "0KB", "1", inputSize, input), // Large value
                 Arguments.of(String.valueOf(Integer.MAX_VALUE * (inputSize - 1L)), "0KB", String.valueOf(Integer.MAX_VALUE), inputSize - 1, input) // Large values
         );
-    }
-
-    @Builder
-    @lombok.Value
-    private static class ExampleIdentifiable implements Identifiable {
-        Integer id;
-        String value;
     }
 
     @SuppressWarnings("unused")

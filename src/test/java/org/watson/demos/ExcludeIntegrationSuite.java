@@ -6,11 +6,13 @@ import org.junit.platform.suite.api.ExcludeClassNamePatterns;
 import org.junit.platform.suite.api.ExcludeTags;
 import org.junit.platform.suite.api.SelectPackages;
 import org.junit.platform.suite.api.Suite;
+import org.junit.platform.suite.api.SuiteDisplayName;
 
+@SuiteDisplayName("Exclude " + IntegrationSuite.TAG + " Test Suite")
 @Execution(ExecutionMode.CONCURRENT)
 @SelectPackages("org.watson.demos")
-@ExcludeTags(IntegrationTestSuite.TAG)
-@ExcludeClassNamePatterns(".*IntegrationTest.*")
+@ExcludeTags(IntegrationSuite.TAG)
+@ExcludeClassNamePatterns({".*IntegrationTest.*", ".*Suite.*"})
 @Suite
-public class ExcludeIntegrationTestSuite {
+public class ExcludeIntegrationSuite {
 }

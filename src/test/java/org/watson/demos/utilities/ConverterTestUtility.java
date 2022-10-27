@@ -6,12 +6,19 @@ import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @UtilityClass
 public class ConverterTestUtility {
+    public static <K, V> Consumer<Map.Entry<K, V>> toBiConsumer(final BiConsumer<K, V> consumer) {
+        return e -> consumer.accept(e.getKey(), e.getValue());
+    }
+
     public static String toQueryString(final Pageable pageable) {
         final List<String> queryParameters = new ArrayList<>();
         if (pageable.isPaged()) {

@@ -15,19 +15,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.watson.demos.utilities.GeneratorTestUtility.generateGreetings;
 
 @DataJpaTest
 class GreetingRepositoryTest {
-    private static final List<Greeting> TEST_VALUES = IntStream.range(0, 10).boxed()
-            .map(i -> Greeting.builder()
-                    .locale(Locale.getAvailableLocales()[i])
-                    .content("ohai"))
-            .map(Greeting.GreetingBuilder::build)
-            .collect(Collectors.toUnmodifiableList());
+    private static final List<Greeting> TEST_VALUES = generateGreetings("ohai");
 
     @Resource
     private GreetingRepository repository;
