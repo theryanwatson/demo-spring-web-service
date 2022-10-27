@@ -1,4 +1,4 @@
-package org.watson.demos.controllers;
+package org.watson.demos;
 
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Named;
@@ -26,7 +26,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.unit.DataSize;
-import org.watson.demos.IntegrationTestSuite;
 import org.watson.demos.models.Greeting;
 
 import java.time.ZonedDateTime;
@@ -38,13 +37,14 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.watson.demos.utilities.ConverterTestUtility.toQueryString;
 
 @Tag(IntegrationTestSuite.TAG)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureTestDatabase
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class GreetingControllerIntegrationTest {
+class ApplicationIntegrationTest {
     private static final String VERSION_1 = "v1";
     private static final Locale[] AVAILABLE_LOCALES = Locale.getAvailableLocales();
     private static final List<Greeting> TEST_VALUES = IntStream.range(0, 10).boxed()
@@ -73,8 +73,9 @@ class GreetingControllerIntegrationTest {
         final Object request = expected.size() == 1 ? expected.get(0) : expected;
         final ResponseEntity<ListOfGreetings> actual = template.postForEntity("/greetings", request, ListOfGreetings.class, port, VERSION_1);
 
-        assertCreatedHeaders(actual, expected.size());
-        assertActualMatchesExpected(actual.getBody(), expected);
+        assertThat(actual.getBody()).isNotNull();
+        assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(actual.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
     }
 
     Stream<Arguments> postGreetings() {
@@ -88,11 +89,22 @@ class GreetingControllerIntegrationTest {
     @MethodSource
     @ParameterizedTest
     void getGreetings(final Pageable pageable) {
-        final ResponseEntity<ListOfGreetings> actual = template.getForEntity("/greetings" + buildQueryString(pageable), ListOfGreetings.class, port, VERSION_1);
+        final ResponseEntity<ListOfGreetings> actual = template.getForEntity("/greetings" + toQueryString(pageable), ListOfGreetings.class, port, VERSION_1);
 
-        assertPageHeaders(actual, pageable);
+        assertThat(actual.getBody()).isNotNull();
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(actual.getHeaders().get(HttpHeaders.LINK)).isNotEmpty();
+
+        final List<Greeting> actualBody = actual.getBody();
+        assertThat(actualBody).hasSize(pageable.getPageSize());
+        assertThat(actualBody).allSatisfy(entry -> assertThat(entry)
+                .satisfies(
+                        a -> assertThat(a).isNotNull(),
+                        a -> assertThat(a.getId()).isNotNull(),
+                        a -> assertThat(a.getLocale()).isNotNull(),
+                        a -> assertThat(a.getContent()).isNotEmpty(),
+                        a -> assertThat(a.getCreated()).isBetween(ZonedDateTime.now().minusMinutes(5), ZonedDateTime.now())
+                ));
     }
 
     Stream<Arguments> getGreetings() {
@@ -123,15 +135,10 @@ class GreetingControllerIntegrationTest {
     @MethodSource
     @ParameterizedTest
     void deleteGreeting(final Pageable pageable) {
-        final ResponseEntity<ListOfGreetings> expected = template.getForEntity("/greetings" + buildQueryString(pageable), ListOfGreetings.class, port, VERSION_1);
+        final ResponseEntity<ListOfGreetings> expected = template.getForEntity("/greetings" + toQueryString(pageable), ListOfGreetings.class, port, VERSION_1);
         assertThat(expected.getBody()).isNotEmpty();
 
-        final String idParameters = expected.getBody().stream()
-                .map(Greeting::getId)
-                .map(id -> "id=" + id)
-                .collect(Collectors.joining("&", "?", ""));
-        ResponseEntity<Void> actual = template.exchange("/greetings" + idParameters, HttpMethod.DELETE, null, Void.class, port, VERSION_1);
-
+        ResponseEntity<Void> actual = template.exchange("/greetings" + toQueryString(expected.getBody(), Greeting::getId, "id"), HttpMethod.DELETE, null, Void.class, port, VERSION_1);
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 
@@ -141,82 +148,6 @@ class GreetingControllerIntegrationTest {
                 Arguments.of(PageRequest.ofSize(1)),
                 Arguments.of(PageRequest.ofSize(IntStream.of(TEST_VALUES.size(), maxPageSize, maxUrlLength).min().orElse(1)))
         );
-    }
-
-    @SuppressWarnings("UastIncorrectHttpHeaderInspection")
-    private void assertPageHeaders(final ResponseEntity<?> actual, final Pageable pageable) {
-        assertThat(actual.getHeaders().get("Page-Index")).satisfies(
-                h -> assertThat(h).isNotEmpty(),
-                h -> assertThat(h.get(0)).isEqualTo(String.valueOf(pageable.isUnpaged() ? 0 : pageable.getPageNumber()))
-        );
-        assertThat(actual.getHeaders().get("Page-Total-Pages")).satisfies(
-                h -> assertThat(h).isNotEmpty(),
-                h -> assertThat(h.get(0)).isEqualTo(String.valueOf(calculateTotalPages(pageable)))
-        );
-        assertThat(actual.getHeaders().get("Page-Total-Elements")).satisfies(
-                h -> assertThat(h).isNotEmpty(),
-                h -> assertThat(h.get(0)).isEqualTo(String.valueOf(TEST_VALUES.size()))
-        );
-        assertThat(actual.getHeaders().get("Page-Size")).satisfies(
-                h -> assertThat(h).isNotEmpty(),
-                h -> assertThat(h.get(0)).isEqualTo(String.valueOf(pageable.isUnpaged() ? 20 : pageable.getPageSize()))
-        );
-        assertThat(actual.getHeaders().get("Page-Sort")).satisfies(
-                h -> assertThat(h).isNotEmpty(),
-                h -> assertThat(h.get(0)).isEqualTo(String.valueOf(pageable.getSort()))
-        );
-    }
-
-    private void assertCreatedHeaders(final ResponseEntity<?> actual, final int expectedEntries) {
-        assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(actual.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-
-        if (expectedEntries == 0) {
-            assertThat(actual.getHeaders())
-                    .doesNotContainKey(HttpHeaders.LOCATION)
-                    .doesNotContainKey(HttpHeaders.CONTENT_LOCATION);
-        } else if (expectedEntries == 1) {
-            assertThat(actual.getHeaders())
-                    .containsKey(HttpHeaders.LOCATION)
-                    .doesNotContainKey(HttpHeaders.CONTENT_LOCATION);
-        } else {
-            assertThat(actual.getHeaders())
-                    .doesNotContainKey(HttpHeaders.LOCATION)
-                    .containsKey(HttpHeaders.CONTENT_LOCATION);
-        }
-    }
-
-    private void assertActualMatchesExpected(final List<Greeting> actual, final List<Greeting> expected) {
-        assertThat(actual).hasSize(expected.size());
-
-        for (int i = 0; i < expected.size(); i++) {
-            final Greeting expectedEntry = expected.get(i);
-
-            assertThat(actual.get(i)).satisfies(
-                    a -> assertThat(a).isNotNull(),
-                    a -> assertThat(a.getId()).isNotNull(),
-                    a -> assertThat(a.getCreated()).isBetween(ZonedDateTime.now().minusMinutes(5), ZonedDateTime.now()),
-                    a -> assertThat(a.getLocale()).isEqualTo(expectedEntry.getLocale()),
-                    a -> assertThat(a.getContent()).isEqualTo(expectedEntry.getContent())
-            );
-        }
-    }
-
-    private String buildQueryString(final Pageable pageable) {
-        final List<String> queryParameters = new ArrayList<>();
-        if (pageable.isPaged()) {
-            queryParameters.add("page=" + pageable.getPageNumber());
-            queryParameters.add("size=" + pageable.getPageSize());
-        }
-        pageable.getSort().get()
-                .map(s -> "sort=" + s.getProperty() + (s.isDescending() ? ",desc" : ""))
-                .forEach(queryParameters::add);
-        return queryParameters.stream()
-                .collect(Collectors.joining("&", "?", ""));
-    }
-
-    private int calculateTotalPages(final Pageable pageable) {
-        return (int) Math.ceil(TEST_VALUES.size() / (double) (pageable.isUnpaged() ? 20 : pageable.getPageSize()));
     }
 
     private static class ListOfGreetings extends ArrayList<Greeting> {}
