@@ -22,32 +22,44 @@ fetchJson("/actuator/health")
     .then(insertHtmlBeforeEnd("actuator-health"))
     .catch(handleErrors);
 
-fetchJsonOrThrow("/actuator/metrics")
-    .then(function (data) {
-        return data["names"]
-            .map(m => [m, `/actuator/metrics/${m}`]);
-    })
-    .then(entriesToHrefList)
-    .then(insertHtmlBeforeEnd("actuator-metrics"))
-    .catch(handleErrors);
+function populateMetrics(elementId) {
+    if (!isElementPopulated(elementId)) {
+        fetchJsonOrThrow("/actuator/metrics")
+            .then(function (data) {
+                return data["names"]
+                    .map(m => [m, `/actuator/metrics/${m}`]);
+            })
+            .then(entriesToHrefList)
+            .then(insertHtmlBeforeEnd(elementId))
+            .catch(handleErrors);
+    }
+}
 
-fetchJsonOrThrow("/actuator/info")
-    .then(entriesToNestedList)
-    .then(insertHtmlBeforeEnd("actuator-info"))
-    .catch(handleErrors);
+function populateInfo(elementId) {
+    if (!isElementPopulated(elementId)) {
+        fetchJsonOrThrow("/actuator/info")
+            .then(entriesToNestedList)
+            .then(insertHtmlBeforeEnd(elementId))
+            .catch(handleErrors);
+    }
+}
 
-fetchJsonOrThrow("/actuator")
-    .then(function (data) {
-        return Object.entries(data["_links"])
-            .filter(([_, v]) => v.hasOwnProperty("href"))
-            .map(([k, v]) => [k === "self" ? "actuator" : k, v])
-            .map(([k, v]) => [k, v["href"]])
-            .filter(([_, v]) => !v.includes("{"))
-            .map(entryToTitleCase);
-    })
-    .then(entriesToHrefList)
-    .then(insertHtmlBeforeEnd("actuator-endpoints"))
-    .catch(handleErrors);
+function populateEndpoints(elementId) {
+    if (!isElementPopulated(elementId)) {
+        fetchJsonOrThrow("/actuator")
+            .then(function (data) {
+                return Object.entries(data["_links"])
+                    .filter(([_, v]) => v.hasOwnProperty("href"))
+                    .map(([k, v]) => [k === "self" ? "actuator" : k, v])
+                    .map(([k, v]) => [k, v["href"]])
+                    .filter(([_, v]) => !v.includes("{"))
+                    .map(entryToTitleCase);
+            })
+            .then(entriesToHrefList)
+            .then(insertHtmlBeforeEnd(elementId))
+            .catch(handleErrors);
+    }
+}
 
 function setStatusElement(elementId, upText = "UP", downText = "DOWN", unknownText = "UNKNOWN") {
     return function (data) {
@@ -96,10 +108,14 @@ function entriesToList(entries, keyValueMapper = ([k, v]) => `${k}: ${v}`) {
 
 function insertHtmlBeforeEnd(elementId) {
     return function (html) {
-        document
-            .getElementById(elementId)
-            .insertAdjacentHTML("beforeend", html);
+        let element = document.getElementById(elementId);
+        element.insertAdjacentHTML("beforeend", html)
+        element.setAttribute("populated", "true");
     }
+}
+
+function isElementPopulated(elementId) {
+    return document.getElementById(elementId).getAttribute("populated") !== null;
 }
 
 function entryToTitleCase([k, v]) {
@@ -113,6 +129,11 @@ function entryToTitleCase([k, v]) {
 function fetchJson(input) {
     return fetch(input)
         .then(function (response) {
+            if (response === null) {
+                throw Error("Response was null");
+            } else if (response.status === 404) {
+                throw Error("Endpoint not enabled");
+            }
             return response.json();
         });
 }

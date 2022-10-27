@@ -7,7 +7,7 @@
     <link th:href="@{/css/template.css}" rel="stylesheet"/>
 </head>
 <body>
-<h2 id="page-title" th:text="${@environment.getProperty('info.build.description', 'Demo Web Service')}">Demo</h2>
+<h2 th:id="page-title" th:text="${@environment.getProperty('info.build.description', 'Demo Web Service')}">Demo</h2>
 <span style="display:block; margin-bottom: 2%" class="status">Status:
     <span style="display:contents" class="status unknown" title="Live State" id="live-state">UNKNOWN</span>
     <span style="display:contents" class="status unknown" title="Ready State" id="ready-state">UNKNOWN</span>
@@ -15,32 +15,33 @@
 </span>
 
 <details open>
-    <summary>Health</summary>
-    <div title="Health" id="actuator-health"></div>
-</details>
-
-<details open>
     <summary>Documentation</summary>
     <div title="Documentation">
         <ul>
-            <li><a th:href="@{/redoc.html}">Redoc</a></li>
-            <li><a th:href="@{/swagger-ui/index.html}">Swagger</a></li>
+            <li><a th:target="_blank" th:href="@{/redoc.html}">Redoc</a></li>
+            <li><a th:target="_blank" th:href="@{/swagger-ui/index.html}">Swagger</a></li>
         </ul>
     </div>
 </details>
 
-<details th:if="${@environment.getProperty('management.endpoints.web.exposure.include', '').matches('.*([*]|info).*')}">
+<details open>
+    <summary>Health</summary>
+    <div title="Health" id="actuator-health"></div>
+</details>
+
+<details th:if="${@environment.getProperty('management.endpoints.web.exposure.include', '').matches('.*([*]|info).*')}"
+         th:ontoggle="'javascript:populateInfo(\'actuator-info\')'">
     <summary>Info</summary>
     <div title="Info" id="actuator-info"></div>
 </details>
 
-<details
-        th:if="${@environment.getProperty('management.endpoints.web.exposure.include', '').matches('.*([*]|metrics).*')}">
+<details th:if="${@environment.getProperty('management.endpoints.web.exposure.include', '').matches('.*([*]|metrics).*')}"
+         th:ontoggle="'javascript:populateMetrics(\'actuator-metrics\')'">
     <summary>Metrics</summary>
     <div title="Metrics" id="actuator-metrics" style="column-count: 3;"></div>
 </details>
 
-<details>
+<details th:ontoggle="'javascript:populateEndpoints(\'actuator-endpoints\')'">
     <summary>Actuator Json Endpoints</summary>
     <div title="Actuator Json Endpoints" id="actuator-endpoints"></div>
 </details>
