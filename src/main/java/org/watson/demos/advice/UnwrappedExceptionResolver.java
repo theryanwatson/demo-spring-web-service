@@ -66,6 +66,7 @@ public class UnwrappedExceptionResolver extends DefaultHandlerExceptionResolver 
         if (code.isPresent()) {
             try {
                 response.sendError(code.get());
+                log.debug("Send error code. {}", code);
                 return new ModelAndView("error");
             } catch (IOException e) {
                 log.debug("Unable to send error. {}", e.getMessage());

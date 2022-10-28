@@ -1,5 +1,6 @@
 package org.watson.demos.advice;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.core.MethodParameter;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
  * @see <a href=https://www.rfc-editor.org/rfc/rfc2616#section-14.14>RFC 2616, Section 14.14</a>
  * @see <a href=https://www.rfc-editor.org/rfc/rfc2616#section-14.30>RFC 2616, Section 14.30</a>
  */
+@Slf4j
 @ConditionalOnWebApplication
 @ControllerAdvice(annotations = RestController.class)
 public class LocationResponseBodyAdvice implements ResponseBodyAdvice<Collection<? extends Identifiable>> {
@@ -72,11 +74,13 @@ public class LocationResponseBodyAdvice implements ResponseBodyAdvice<Collection
                     .collect(Collectors.toUnmodifiableList());
 
             if (relativePaths.size() == 1) {
+                log.debug("Setting {} header.", HttpHeaders.LOCATION);
                 relativePaths.stream()
                         .findFirst()
                         .map(relative -> toAbsoluteLocationUri(relative, request.getURI()))
                         .ifPresent(response.getHeaders()::setLocation);
             } else {
+                log.debug("Setting {} header.", HttpHeaders.CONTENT_LOCATION);
                 relativePaths.stream()
                         .limit(maxHeaderCount)
                         .forEach(relative -> response.getHeaders().add(HttpHeaders.CONTENT_LOCATION, relative));
