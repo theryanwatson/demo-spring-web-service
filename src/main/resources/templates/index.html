@@ -8,22 +8,43 @@
 </head>
 <body>
 <h2 th:id="page-title" th:text="${@environment.getProperty('info.build.description', 'Demo Web Service')}">Demo</h2>
-<span style="display:block; margin-bottom: 2%" class="status">Status:
-    <span style="display:contents" class="status unknown" title="Live State" id="live-state">UNKNOWN</span>
-    <span style="display:contents" class="status unknown" title="Ready State" id="ready-state">UNKNOWN</span>
-    <span style="display:contents" class="status unknown" title="Healthy State" id="healthy-state">UNKNOWN</span>
-</span>
-
-<details open title="Documentation" id="documentation-endpoints">
-    <summary>Documentation</summary>
-    <ul>
+<details open title="API Documentation" id="api-documentation-endpoints">
+    <summary>API Documentation</summary>
+    <ul id="api-documentation-endpoints-list">
         <li><a th:target="_blank" th:href="@{/redoc.html}">Redoc</a></li>
         <li><a th:target="_blank" th:href="@{/swagger-ui/index.html}">Swagger</a></li>
     </ul>
 </details>
 
-<details open title="Health" id="actuator-health">
-    <summary>Health</summary>
+<details title="Health" id="actuator-health">
+    <summary>Health:
+        <span style="display:contents" class="status unknown" title="Live State" id="live-state">UNKNOWN</span>
+        <span style="display:contents" class="status unknown" title="Ready State" id="ready-state">UNKNOWN</span>
+        <span style="display:contents" class="status unknown" title="Healthy State" id="healthy-state">UNKNOWN</span>
+    </summary>
+</details>
+
+<details title="Availability Controls" id="availability-endpoints">
+    <summary>Availability Controls</summary>
+    <ul id="availability-endpoints-list">
+        <li>
+            <span>Health</span>
+            <button class="status up" th:onclick="'javascript:patch(\'/v1/availability/health/UP\');refreshHealth();'">UP</button>
+            <button class="status down" th:onclick="'javascript:patch(\'/v1/availability/health/DOWN\');refreshHealth();'">DOWN</button>
+            <button class="status out" th:onclick="'javascript:patch(\'/v1/availability/health/OUT_OF_SERVICE\');refreshHealth();'">OUT_OF_SERVICE</button>
+            <button class="status" th:onclick="'javascript:patch(\'/v1/availability/health/UNKNOWN\');refreshHealth();'">UNKNOWN</button>
+        </li>
+        <li>
+            <span>Liveness</span>
+            <button class="status up" th:onclick="'javascript:patch(\'/v1/availability/liveness/CORRECT\');refreshHealth();'">CORRECT</button>
+            <button class="status down" th:onclick="'javascript:patch(\'/v1/availability/liveness/BROKEN\');refreshHealth();'">BROKEN</button>
+        </li>
+        <li>
+            <span>Readiness</span>
+            <button class="status up" th:onclick="'javascript:patch(\'/v1/availability/readiness/ACCEPTING_TRAFFIC\');refreshHealth();'">ACCEPTING_TRAFFIC</button>
+            <button class="status out" th:onclick="'javascript:patch(\'/v1/availability/readiness/REFUSING_TRAFFIC\');refreshHealth();'">REFUSING_TRAFFIC</button>
+        </li>
+    </ul>
 </details>
 
 <details title="Info" id="actuator-info"

@@ -1,26 +1,32 @@
-fetchJson("/actuator/health/liveness")
-    .then(setStatusElement("live-state", "LIVE"))
-    .catch(handleErrors);
+function refreshHealth() {
+    fetchJson("/actuator/health")
+        .then(function (data) {
+            return Object.entries(data["components"])
+                .filter(([_, v]) => v.hasOwnProperty("status"))
+                .map(([k, v]) => [k, v["status"]])
+                .map(([k, v]) => [k, `<a href="actuator/health/${k}">${v}</a>`])
+                .map(entryToTitleCase);
+        })
+        .then(entriesToList)
+        .then(addIdToHtml("actuator-health-list"))
+        .then(removeExistingElement("actuator-health-list"))
+        .then(insertHtmlBeforeEnd("actuator-health"))
+        .catch(handleErrors);
 
-fetchJson("/actuator/health/readiness")
-    .then(setStatusElement("ready-state", "READY", "NOT READY"))
-    .catch(handleErrors);
+    fetchJson("/actuator/health/liveness")
+        .then(setStatusElement("live-state", "LIVE"))
+        .catch(handleErrors);
 
-fetchJson("/actuator/health")
-    .then(setStatusElement("healthy-state", "HEALTHY", "UNHEALTHY"))
-    .catch(handleErrors);
+    fetchJson("/actuator/health/readiness")
+        .then(setStatusElement("ready-state", "READY", "NOT READY"))
+        .catch(handleErrors);
 
-fetchJson("/actuator/health")
-    .then(function (data) {
-        return Object.entries(data["components"])
-            .filter(([_, v]) => v.hasOwnProperty("status"))
-            .map(([k, v]) => [k, v["status"]])
-            .map(([k, v]) => [k, `<a href="actuator/health/${k}">${v}</a>`])
-            .map(entryToTitleCase);
-    })
-    .then(entriesToList)
-    .then(insertHtmlBeforeEnd("actuator-health"))
-    .catch(handleErrors);
+    fetchJson("/actuator/health")
+        .then(setStatusElement("healthy-state", "HEALTHY", "UNHEALTHY"))
+        .catch(handleErrors);
+}
+
+refreshHealth();
 
 function populateMetrics(elementId) {
     if (!isElementPopulated(elementId)) {
@@ -30,6 +36,8 @@ function populateMetrics(elementId) {
                     .map(m => [m, `/actuator/metrics/${m}`]);
             })
             .then(entriesToHrefList)
+            .then(addIdToHtml(elementId + "-list"))
+            .then(removeExistingElement(elementId + "-list"))
             .then(insertHtmlBeforeEnd(elementId))
             .catch(handleErrors);
     }
@@ -39,6 +47,8 @@ function populateInfo(elementId) {
     if (!isElementPopulated(elementId)) {
         fetchJsonOrThrow("/actuator/info")
             .then(entriesToNestedList)
+            .then(addIdToHtml(elementId + "-list"))
+            .then(removeExistingElement(elementId + "-list"))
             .then(insertHtmlBeforeEnd(elementId))
             .catch(handleErrors);
     }
@@ -56,26 +66,32 @@ function populateEndpoints(elementId) {
                     .map(entryToTitleCase);
             })
             .then(entriesToHrefList)
+            .then(addIdToHtml(elementId + "-list"))
+            .then(removeExistingElement(elementId + "-list"))
             .then(insertHtmlBeforeEnd(elementId))
             .catch(handleErrors);
     }
 }
 
-function setStatusElement(elementId, upText = "UP", downText = "DOWN", unknownText = "UNKNOWN") {
+function setStatusElement(elementId, upText = null, downText = null, outOfServiceText = null, unknownText = "UNKNOWN") {
     return function (data) {
         let element = document.getElementById(elementId);
-        element.classList.remove("up", "down", "unknown");
+        element.classList.remove("up", "down", "out", "unknown");
 
         if (data.hasOwnProperty("status")) {
-            if (data["status"] === "UP") {
+            let status = data["status"];
+            if (status === "UP" || status === "OK" || status === "CORRECT" || status === "ACCEPTING_TRAFFIC") {
                 element.classList.add("up");
-                element.innerText = upText;
-            } else if (data["status"] === "DOWN") {
+                element.innerText = upText ? upText : status;
+            } else if (status === "DOWN" || status === "BROKEN") {
                 element.classList.add("down");
-                element.innerText = downText;
+                element.innerText = downText ? downText : status;
+            } else if (status === "OUT_OF_SERVICE" || status === "REFUSING_TRAFFIC") {
+                element.classList.add("out");
+                element.innerText = outOfServiceText ? outOfServiceText : status;
             } else {
                 element.classList.add("unknown");
-                element.innerText = data["status"];
+                element.innerText = status;
             }
         } else {
             element.classList.add("unknown");
@@ -106,11 +122,24 @@ function entriesToList(entries, keyValueMapper = ([k, v]) => `${k}: ${v}`) {
     return html.join("");
 }
 
+function addIdToHtml(elementId) {
+    return function (html) {
+        return html.replace(/^(<[^> ]+)(.*)$/, `$1 id="${elementId}"$2`);
+    }
+}
+
 function insertHtmlBeforeEnd(elementId) {
     return function (html) {
         let element = document.getElementById(elementId);
         element.insertAdjacentHTML("beforeend", html)
         element.setAttribute("populated", "true");
+    }
+}
+
+function removeExistingElement(elementId) {
+    return function (html) {
+        document.getElementById(elementId)?.remove();
+        return html;
     }
 }
 
@@ -124,6 +153,20 @@ function entryToTitleCase([k, v]) {
         .map(w => w.charAt(0).toUpperCase() + w.substring(1))
         .join(" ");
     return [title.length < 3 || !title.match(/[aeiou ]/i) ? title.toUpperCase() : title, v];
+}
+
+function patch(input) {
+    fetch(input, {method: "PATCH"})
+        .then(function (response) {
+            if (!response.ok) {
+                throw Error(response.statusText);
+            }
+        })
+        .then(function () {
+            refreshHealth();
+        })
+        .then(new Promise(resolve => setTimeout(resolve, 500)))
+        .catch(handleErrors)
 }
 
 function fetchJson(input) {

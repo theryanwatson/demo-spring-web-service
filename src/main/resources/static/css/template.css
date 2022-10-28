@@ -7,11 +7,15 @@ a {
     color: blue;
 }
 
+button {
+    border-radius: 4px 0 4px 0;
+}
+
 .status {
     font-weight: bold;
 }
 
-.status.unknown {
+.status.out {
     color: darkblue;
 }
 
@@ -34,24 +38,33 @@ a {
 
 @media (prefers-color-scheme: dark) {
     body {
-        color: #ddd;
-        background: #202020;
+        color: #ababac;
+        background: #202125;
     }
 
     body a {
-        color: #009fff;
+        color: #89b3f7;
     }
 
-    .status.unknown {
+    body button {
+        background: #313336;
+        border-color: #6c6c6c;
+    }
+
+    .status {
+        color: #b4b4b5;
+    }
+
+    .status.out {
         color: steelblue;
     }
 
     .status.up {
-        color: seagreen;
+        color: #489b54;
     }
 
     .status.down {
-        color: #bb072e;
+        color: #c55350;
     }
 }
 
