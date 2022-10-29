@@ -6,8 +6,11 @@
     <link th:href="@{/img/favicon.ico}" rel="shortcut icon" type="image/ico"/>
     <link th:href="@{/css/template.css}" rel="stylesheet"/>
 </head>
+
 <body>
-<h2 th:id="page-title" th:text="${@environment.getProperty('info.build.description', 'Demo Web Service')}">Demo</h2>
+<h2 th:id="page-title" th:text="|${@environment.getProperty('info.build.description', 'Demo Web Service')} - Display Page|">Display Page</h2>
+<p>This page is a convenient place to display features; it does not contain any actual features.</p>
+
 <details open title="API Documentation" id="api-documentation-endpoints">
     <summary>API Documentation</summary>
     <ul id="api-documentation-endpoints-list">
@@ -21,6 +24,7 @@
         <span style="display:contents" class="status unknown" title="Live State" id="live-state">UNKNOWN</span>
         <span style="display:contents" class="status unknown" title="Ready State" id="ready-state">UNKNOWN</span>
         <span style="display:contents" class="status unknown" title="Healthy State" id="healthy-state">UNKNOWN</span>
+        <button style="display:contents; font-size: x-small" class="status unknown" th:onclick="'javascript:refreshHealth();'">refresh</button>
     </summary>
 </details>
 
@@ -28,21 +32,21 @@
     <summary>Availability Controls</summary>
     <ul id="availability-endpoints-list">
         <li>
-            <span>Health</span>
-            <button class="status up" th:onclick="'javascript:patch(\'/v1/availability/health/UP\');refreshHealth();'">UP</button>
-            <button class="status down" th:onclick="'javascript:patch(\'/v1/availability/health/DOWN\');refreshHealth();'">DOWN</button>
-            <button class="status out" th:onclick="'javascript:patch(\'/v1/availability/health/OUT_OF_SERVICE\');refreshHealth();'">OUT_OF_SERVICE</button>
-            <button class="status" th:onclick="'javascript:patch(\'/v1/availability/health/UNKNOWN\');refreshHealth();'">UNKNOWN</button>
-        </li>
-        <li>
-            <span>Liveness</span>
+            <span>Live</span>
             <button class="status up" th:onclick="'javascript:patch(\'/v1/availability/liveness/CORRECT\');refreshHealth();'">CORRECT</button>
             <button class="status down" th:onclick="'javascript:patch(\'/v1/availability/liveness/BROKEN\');refreshHealth();'">BROKEN</button>
         </li>
         <li>
-            <span>Readiness</span>
+            <span>Ready</span>
             <button class="status up" th:onclick="'javascript:patch(\'/v1/availability/readiness/ACCEPTING_TRAFFIC\');refreshHealth();'">ACCEPTING_TRAFFIC</button>
             <button class="status out" th:onclick="'javascript:patch(\'/v1/availability/readiness/REFUSING_TRAFFIC\');refreshHealth();'">REFUSING_TRAFFIC</button>
+        </li>
+        <li>
+            <span>Healthy</span>
+            <button class="status up" th:onclick="'javascript:patch(\'/v1/availability/health/UP\');refreshHealth();'">UP</button>
+            <button class="status down" th:onclick="'javascript:patch(\'/v1/availability/health/DOWN\');refreshHealth();'">DOWN</button>
+            <button class="status out" th:onclick="'javascript:patch(\'/v1/availability/health/OUT_OF_SERVICE\');refreshHealth();'">OUT_OF_SERVICE</button>
+            <button class="status" th:onclick="'javascript:patch(\'/v1/availability/health/UNKNOWN\');refreshHealth();'">UNKNOWN</button>
         </li>
     </ul>
 </details>

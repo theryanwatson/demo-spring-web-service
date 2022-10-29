@@ -9,6 +9,25 @@ a {
 
 button {
     border-radius: 4px 0 4px 0;
+    cursor: pointer;
+}
+
+details summary {
+    font-size: larger;
+    cursor: pointer;
+}
+
+pre {
+    white-space: pre-wrap;
+}
+
+.columns {
+    column-count: 3;
+}
+
+.columns ul {
+    margin-top: 0;
+    display: block;
 }
 
 .status {
@@ -27,14 +46,6 @@ button {
     color: darkred;
 }
 
-.columns {
-    column-count: 3;
-}
-
-.columns ul {
-    margin-top: 0;
-    display: block;
-}
 
 @media (prefers-color-scheme: dark) {
     body {
@@ -66,13 +77,4 @@ button {
     .status.down {
         color: #c55350;
     }
-}
-
-pre {
-    white-space: pre-wrap;
-}
-
-details summary {
-    font-size: larger;
-    cursor: pointer;
 }
