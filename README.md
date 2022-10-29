@@ -1,4 +1,6 @@
 # Spring Boot Web Application Demo
+Note: Several of the links in this document point to http://localhost:8080 and will work if this demo application is currently running.
+
 
 ## Pragmatic RESTful Web Application
 The purpose of this project is to demonstrate functional code examples of Pragmatic REST practices, using Spring Boot to
@@ -12,7 +14,20 @@ for running in containers like Docker.
 * [Validation](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#io.validation) for input validation handling
 * [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#actuator) for monitoring, health, info, etc
 * [Prometheus](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#actuator.metrics.export.prometheus) for graphing/alerting integration
-* [Thymeleaf](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#web.servlet.spring-mvc.template-engines) for page templating, like `/error`
+* [Thymeleaf](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#web.servlet.spring-mvc.template-engines) for page templating, like [Error](http://localhost:8080/error) and [Welcome](http://localhost:8080) pages
+* [Springdoc](https://springdoc.org) for dynamically generated open-api [Swagger](http://localhost:8080/swagger-ui/index.html) and [Redoc](http://localhost:8080/redoc.html) documentation
+
+### Running the Application:
+* Build and run through IDE, or
+* From command line:
+  * Build:
+    ```shell
+    mvn package -DskipTests
+    ```
+  * Run:
+    ```bash
+    java -jar target/demo-spring-web-service-*.jar
+    ```
 
 
 ## Guide for creating a pragmatic RESTful API:
@@ -63,7 +78,57 @@ To use Paged results in a pragmatic way, this project includes
 [UnwrappedPageHttpMessageConverter](src/main/java/org/watson/demos/converters/UnwrappedPageHttpMessageConverter.java) and
 [UnwrappedPageResponseBodyAdvice](src/main/java/org/watson/demos/advice/UnwrappedPageResponseBodyAdvice.java). When enabled
 by the property `server.response.unwrap.page=true`, then enable the developer to return a `Page<SomeModelClass>` from the controller endpoint method. The resulting response will
-contain a JSON array of `SomeModelClass` and Link headers to control paging, in accordance with [RFC 8288](https://datatracker.ietf.org/doc/html/rfc8288).
+contain a JSON array of `SomeModelClass` and Link headers to control paging, in accordance with [RFC 8288](https://www.rfc-editor.org/rfc/rfc5988#section-5).
+
+#### [Return a resource representation (RFC 2616)](https://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api#useful-post-responses)
+Endpoints with a 201 CREATED status will automatically have their Location or Content-Location header written by the [LocationResponseBodyAdvice](/src/main/java/org/watson/demos/advice/LocationResponseBodyAdvice.java),
+in accordance with [RFC 2612 14.14](https://www.rfc-editor.org/rfc/rfc2616#section-14.14) and [RFC 2612 14.30](https://www.rfc-editor.org/rfc/rfc2616#section-14.30).
+
+## Spring Actuator
+Services that have enabled Spring Actuator have access to built-in production-ready features, like health-checks, metrics, etc.
+See the [Actuator Documentation](https://docs.spring.io/spring-boot/docs/current/actuator-api/htmlsingle/) for details.
+
+### Health
+Health, Liveness, and Readiness probes have been enabled in this application through [application.properties](src/main/resources/application.properties).
+* `management.endpoint.health.probes.enabled=true`
+* `management.health.livenessState.enabled=true`
+* `management.health.readinessState.enabled=true`
+
+##### Health Probes
+* [actuator/health](http://localhost:8080/actuator/health)
+* [actuator/health/liveness](http://localhost:8080/actuator/health/liveness)
+* [actuator/health/readiness](http://localhost:8080/actuator/health/readiness)
+
+##### Availability Endpoints
+For demonstration purposes, the [AvailabilityController](src/main/java/org/watson/demos/controllers/AvailabilityController.java) 
+has been added to externally change the state of the health-probes. These endpoints can be accessed through [Swagger](http://localhost:8080/swagger-ui/index.html) or the [Welcome Page](http://localhost:8080).
+* Health
+  ```shell
+  curl -X 'PATCH' http://localhost:8080/v1/availability/health/UP
+  ```
+  ```shell
+  curl -X 'PATCH' http://localhost:8080/v1/availability/health/DOWN
+  ```
+  ```shell
+  curl -X 'PATCH' http://localhost:8080/v1/availability/health/OUT_OF_SERVICE
+  ```
+  ```shell
+  curl -X 'PATCH' http://localhost:8080/v1/availability/health/UNKNOWN
+  ```
+* Liveness
+  ```shell
+  curl -X 'PATCH' http://localhost:8080/v1/availability/liveness/CORRECT
+  ```
+  ```shell
+  curl -X 'PATCH' http://localhost:8080/v1/availability/liveness/BROKEN
+  ```
+* Readiness
+  ```shell
+  curl -X 'PATCH' http://localhost:8080/v1/availability/readiness/ACCEPTING_TRAFFIC
+  ```
+  ```shell
+  curl -X 'PATCH' http://localhost:8080/v1/availability/readiness/REFUSING_TRAFFIC
+  ```
 
 
 ## Error Responses
