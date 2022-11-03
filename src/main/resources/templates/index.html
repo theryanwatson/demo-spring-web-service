@@ -20,11 +20,11 @@
 </details>
 
 <details title="Health" id="actuator-health">
-    <summary>Health:
+    <summary>Health
+        <button style="display:contents" title="Reload" th:onclick="'javascript:refreshHealth();'"><sup>&#x21bb;</sup></button>
         <span style="display:contents" class="status unknown" title="Live State" id="live-state">UNKNOWN</span>
         <span style="display:contents" class="status unknown" title="Ready State" id="ready-state">UNKNOWN</span>
         <span style="display:contents" class="status unknown" title="Healthy State" id="healthy-state">UNKNOWN</span>
-        <button style="display:contents; font-size: x-small" class="status unknown" th:onclick="'javascript:refreshHealth();'">refresh</button>
     </summary>
 </details>
 

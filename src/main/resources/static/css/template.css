@@ -57,6 +57,10 @@ pre {
         color: #89b3f7;
     }
 
+    body sup {
+        color: #ababac;
+    }
+
     body button {
         background: #313336;
         border-color: #6c6c6c;
