@@ -1,7 +1,7 @@
 # Spring Boot Web Application Demo
 Note: Several of the links in this document point to http://localhost:8080 and will work if this demo application is currently running.
 
-
+---
 ## Pragmatic RESTful Web Application
 The purpose of this project is to demonstrate functional code examples of Pragmatic REST practices, using Spring Boot to
 degrease development time, increase testability, increase code and API consistency, and increase out-of-the-box support
@@ -29,7 +29,7 @@ for running in containers like Docker.
     java -jar target/demo-spring-web-service-*.jar
     ```
 
-
+---
 ## Guide for creating a pragmatic RESTful API:
 This article is an excellent place for everyone to start. I agree with, and practice most of what the author suggests. 
 
@@ -84,6 +84,7 @@ contain a JSON array of `SomeModelClass` and Link headers to control paging, in 
 Endpoints with a 201 CREATED status will automatically have their Location or Content-Location header written by the [LocationResponseBodyAdvice](/src/main/java/org/watson/demos/advice/LocationResponseBodyAdvice.java),
 in accordance with [RFC 2612 14.14](https://www.rfc-editor.org/rfc/rfc2616#section-14.14) and [RFC 2612 14.30](https://www.rfc-editor.org/rfc/rfc2616#section-14.30).
 
+---
 ## Spring Actuator
 Services that have enabled Spring Actuator have access to built-in production-ready features, like health-checks, metrics, etc.
 See the [Actuator Documentation](https://docs.spring.io/spring-boot/docs/current/actuator-api/htmlsingle/) for details.
@@ -130,7 +131,7 @@ has been added to externally change the state of the health-probes. These endpoi
   curl -X 'PATCH' http://localhost:8080/v1/availability/readiness/REFUSING_TRAFFIC
   ```
 
-
+---
 ## Error Responses
 This application uses Thymeleaf to create the `/error` [page template](src/main/resources/templates), featuring dynamic fields.
 Spring Web Services can be configured to allow for additional dynamically added fields in error responses:
@@ -141,7 +142,7 @@ Spring Web Services can be configured to allow for additional dynamically added 
 The optional fields can be added to the error response by adding query parameters to the request.
 * `&trace&message&errors`
 
-
+---
 ## Additional Resources
 
 ### Spring Tutorials:

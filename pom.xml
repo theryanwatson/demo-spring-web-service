@@ -92,7 +92,7 @@
                 <configuration>
                     <failOnNoGitDirectory>false</failOnNoGitDirectory>
                     <excludeProperties>
-                         <excludeProperty>.*\.user\..*</excludeProperty>
+                        <excludeProperty>.*\.user\..*</excludeProperty>
                     </excludeProperties>
                 </configuration>
             </plugin>
