@@ -13,6 +13,7 @@ for running in containers like Docker.
 * [Spring Data JPA](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#data.sql.jpa-and-spring-data) for paging support and repository layer
 * [Validation](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#io.validation) for input validation handling
 * [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#actuator) for monitoring, health, info, etc
+* [Cloud Sleuth](https://docs.spring.io/spring-cloud-sleuth/docs/current/reference/htmlsingle/spring-cloud-sleuth.html) for request tracing
 * [Prometheus](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#actuator.metrics.export.prometheus) for graphing/alerting integration
 * [Thymeleaf](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#web.servlet.spring-mvc.template-engines) for page templating, like [Error](http://localhost:8080/error) and [Welcome](http://localhost:8080) pages
 * [Springdoc](https://springdoc.org) for dynamically generated open-api [Swagger](http://localhost:8080/swagger-ui/index.html) and [Redoc](http://localhost:8080/redoc.html) documentation
@@ -95,12 +96,12 @@ Health, Liveness, and Readiness probes have been enabled in this application thr
 * `management.health.livenessState.enabled=true`
 * `management.health.readinessState.enabled=true`
 
-##### Health Probes
+#### Health Probes
 * [actuator/health](http://localhost:8080/actuator/health)
 * [actuator/health/liveness](http://localhost:8080/actuator/health/liveness)
 * [actuator/health/readiness](http://localhost:8080/actuator/health/readiness)
 
-##### Availability Endpoints
+#### Availability Endpoints
 For demonstration purposes, the [AvailabilityController](src/main/java/org/watson/demos/controllers/AvailabilityController.java) 
 has been added to externally change the state of the health-probes. These endpoints can be accessed through [Swagger](http://localhost:8080/swagger-ui/index.html) or the [Welcome Page](http://localhost:8080).
 * Health
@@ -153,3 +154,9 @@ The optional fields can be added to the error response by adding query parameter
 * [Handling Form Submission](https://spring.io/guides/gs/handling-form-submission/)
 * [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
 * [Validation](https://spring.io/guides/gs/validating-form-input/)
+
+
+### Interesting Things To Add
+* Request-scoped bean/user-cache
+* Any other cache for demo /caches endpoint
+* WebClient with Wire-Mock-Style tests
