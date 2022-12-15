@@ -160,3 +160,4 @@ The optional fields can be added to the error response by adding query parameter
 * Request-scoped bean/user-cache
 * Any other cache for demo /caches endpoint
 * WebClient with Wire-Mock-Style tests
+* Imported dev properties, as described in: https://spring.io/blog/2020/08/14/config-file-processing-in-spring-boot-2-4
