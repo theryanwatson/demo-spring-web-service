@@ -3,7 +3,7 @@ package org.watson.demos.models;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import org.springdoc.api.annotations.ParameterObject;
+import org.springdoc.core.annotations.ParameterObject;
 import org.watson.demos.validation.constraints.ValidLocale;
 
 import java.util.Locale;

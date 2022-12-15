@@ -1,5 +1,6 @@
 package org.watson.demos.advice;
 
+import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Named;
@@ -25,7 +26,6 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.watson.demos.models.Identifiable;
 
-import javax.annotation.Resource;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;

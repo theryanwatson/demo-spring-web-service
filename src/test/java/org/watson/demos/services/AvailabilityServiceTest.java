@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Primary;
 import org.watson.demos.events.HealthEvent;
 import org.watson.demos.models.HealthStatus;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -44,4 +44,5 @@ public class GeneratorTestUtility {
         Integer id;
         String content;
     }
+
 }

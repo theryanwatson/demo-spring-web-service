@@ -14,10 +14,11 @@ import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
+import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springdoc.core.customizers.OpenApiCustomiser;
+import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.info.BuildProperties;
@@ -27,7 +28,6 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
-import javax.annotation.Resource;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
@@ -98,7 +98,7 @@ class SpringDocConfigurationTest {
     @Resource
     private Schema<?> errorSchema;
     @Resource
-    private OpenApiCustomiser sharedErrorsCustomizer;
+    private OpenApiCustomizer sharedErrorsCustomizer;
     @Resource
     private ModelConverter arraySchemaModelConverter;
 

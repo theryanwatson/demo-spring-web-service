@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.watson.demos.events.HealthEvent;
 import org.watson.demos.models.HealthStatus;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;

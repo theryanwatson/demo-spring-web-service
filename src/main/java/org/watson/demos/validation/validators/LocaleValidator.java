@@ -1,9 +1,9 @@
 package org.watson.demos.validation.validators;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import org.watson.demos.validation.constraints.ValidLocale;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import java.util.Locale;
 import java.util.Set;
 

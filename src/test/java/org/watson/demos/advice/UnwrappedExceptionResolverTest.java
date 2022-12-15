@@ -1,5 +1,8 @@
 package org.watson.demos.advice;
 
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -10,13 +13,10 @@ import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-import static javax.servlet.http.HttpServletResponse.SC_NOT_ACCEPTABLE;
+import static jakarta.servlet.http.HttpServletResponse.SC_NOT_ACCEPTABLE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doThrow;
@@ -110,7 +110,7 @@ class UnwrappedExceptionResolverTest {
         final ModelAndView mv = resolver.doResolveException(request, response, null, expected);
 
         assertThat(mv).isNotNull();
-        verify(response).sendError(SC_NOT_ACCEPTABLE);
+        verify(response).sendError(SC_NOT_ACCEPTABLE, "Could not parse Accept header.");
     }
 
     @Test

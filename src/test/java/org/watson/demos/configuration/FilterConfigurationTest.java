@@ -1,13 +1,13 @@
 package org.watson.demos.configuration;
 
+import brave.Tracer;
+import brave.Tracing;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.cloud.sleuth.Tracer;
-import org.springframework.cloud.sleuth.brave.bridge.BraveTracer;
 import org.watson.demos.filters.RequestLoggingFilter;
 
 import java.util.Optional;
@@ -24,7 +24,7 @@ class FilterConfigurationTest {
     @ParameterizedTest
     void filterBeansEnabledByDefault(final String beanName) {
         contextRunner.withPropertyValues("spring.config.location=classpath:empty.properties")
-                .withBean(Tracer.class, () -> new BraveTracer(null, null, null))
+                .withBean(Tracer.class, Tracing::currentTracer)
                 .run(context -> assertThat(context).hasBean(beanName));
     }
 

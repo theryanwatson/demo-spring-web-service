@@ -31,7 +31,7 @@ import java.util.stream.Stream;
  * @see UnwrappedPageResponseBodyAdvice
  */
 @ConditionalOnWebApplication
-@ConditionalOnJava(JavaVersion.EIGHT)
+@ConditionalOnJava(JavaVersion.SEVENTEEN)
 @ConditionalOnProperty("server.response.unwrap.page")
 @Component
 public class UnwrappedPageHttpMessageConverter extends AbstractHttpMessageConverter<Page<?>> {

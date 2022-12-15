@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Import;
 import org.watson.demos.models.HealthStatus;
 import org.watson.demos.services.AvailabilityService;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.Map;
 
 import static org.mockito.Mockito.verify;

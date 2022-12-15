@@ -1,20 +1,20 @@
 package org.watson.demos.configuration;
 
+import brave.Span;
+import brave.Tracer;
+import brave.propagation.TraceContext;
+import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.TraceContext;
-import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.watson.demos.filters.RequestLoggingFilter;
 
-import javax.servlet.Filter;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 @Slf4j
@@ -44,7 +44,7 @@ class FilterConfiguration {
         return (request, response, chain) -> {
             tracer.map(Tracer::currentSpan)
                     .map(Span::context)
-                    .map(TraceContext::traceId)
+                    .map(TraceContext::traceIdString)
                     .ifPresent(traceId -> ((HttpServletResponse) response).addHeader(traceHeaderName, traceId));
             chain.doFilter(request, response);
         };
