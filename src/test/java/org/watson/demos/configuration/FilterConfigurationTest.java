@@ -4,7 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.cloud.sleuth.Tracer;
+import org.springframework.cloud.sleuth.brave.bridge.BraveTracer;
 import org.watson.demos.filters.RequestLoggingFilter;
 
 import java.util.Optional;
@@ -14,6 +17,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FilterConfigurationTest {
 
     private final FilterConfiguration configuration = new FilterConfiguration();
+    private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+            .withUserConfiguration(FilterConfiguration.class);
+
+    @ValueSource(strings = {"traceIdHeaderResponseFilter", "requestLoggingRegistrationBean"})
+    @ParameterizedTest
+    void filterBeansEnabledByDefault(final String beanName) {
+        contextRunner.withPropertyValues("spring.config.location=classpath:empty.properties")
+                .withBean(Tracer.class, () -> new BraveTracer(null, null, null))
+                .run(context -> assertThat(context).hasBean(beanName));
+    }
+
+    @ValueSource(strings = {"traceIdHeaderResponseFilter", "requestLoggingRegistrationBean"})
+    @ParameterizedTest
+    void filterBeansDisabledByProperty(final String beanName) {
+        contextRunner.withPropertyValues("spring.config.location=classpath:empty.properties")
+                .withPropertyValues("server.response.trace.header.enabled=false", "server.request.logging.enabled=false")
+                .run(context -> assertThat(context).doesNotHaveBean(beanName));
+    }
 
     @NullAndEmptySource
     @ValueSource(strings = {"/some-path", "/this/is/a/nested/path"})
