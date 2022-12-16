@@ -1,5 +1,6 @@
 package org.watson.demos.converters;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -48,7 +49,7 @@ class UnwrappedPageHttpMessageConverterTest {
         when(message.getHeaders()).thenReturn(new HttpHeaders());
 
         converter.write(new PageImpl<>(expected), MediaType.APPLICATION_JSON, message);
-        assertThat(OBJECT_MAPPER.readValue(stream.toString(), List.class)).isEqualTo(expected);
+        assertThat(OBJECT_MAPPER.readValue(stream.toString(), new TypeReference<List<String>>() {})).isEqualTo(expected);
     }
 
     @Test
