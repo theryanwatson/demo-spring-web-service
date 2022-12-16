@@ -25,7 +25,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.unit.DataSize;
-import org.watson.demos.IntegrationSuite;
 import org.watson.demos.models.Greeting;
 import org.watson.demos.models.GreetingProbe;
 import org.watson.demos.services.GreetingService;
@@ -61,7 +60,7 @@ import static org.watson.demos.utilities.ConverterTestUtility.toBiConsumer;
 import static org.watson.demos.utilities.ConverterTestUtility.toQueryString;
 import static org.watson.demos.utilities.GeneratorTestUtility.generateGreetings;
 
-@Tag(IntegrationSuite.TAG)
+@Tag("Integration")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @WebMvcTest(GreetingController.class)
 class GreetingControllerIntegrationTest {
