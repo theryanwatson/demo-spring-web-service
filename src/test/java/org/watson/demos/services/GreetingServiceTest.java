@@ -1,5 +1,6 @@
 package org.watson.demos.services;
 
+import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -12,13 +13,11 @@ import org.watson.demos.models.Greeting;
 import org.watson.demos.models.GreetingProbe;
 import org.watson.demos.repositories.GreetingRepository;
 
-import jakarta.annotation.Resource;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -87,9 +86,9 @@ class GreetingServiceTest {
 
     @Test
     void delete_passesThroughToRepository() {
-        final Set<UUID> input = IntStream.range(0, 3).boxed()
+        final Collection<UUID> input = IntStream.range(0, 3).boxed()
                 .map(i -> UUID.randomUUID())
-                .collect(Collectors.toUnmodifiableSet());
+                .toList();
 
         service.deleteAll(input);
 

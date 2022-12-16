@@ -2,6 +2,7 @@ package org.watson.demos.controllers;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Named;
@@ -29,7 +30,6 @@ import org.watson.demos.models.Greeting;
 import org.watson.demos.models.GreetingProbe;
 import org.watson.demos.services.GreetingService;
 
-import jakarta.annotation.Resource;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -103,7 +103,7 @@ class GreetingControllerIntegrationTest {
                         .collect(Collectors.collectingAndThen(Collectors.toUnmodifiableSet(),
                                 in -> EXPECTED_VALUES.values().stream()
                                         .filter(g -> in.contains(g.getContent()))
-                                        .collect(Collectors.toList()))));
+                                        .toList())));
 
         when(service.getAll(any(), any()))
                 .thenAnswer(a -> {
@@ -255,7 +255,7 @@ class GreetingControllerIntegrationTest {
         return collection.stream()
                 .skip(offset % collection.size())
                 .limit(size % collection.size())
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
     }
 
     private static class ListOfGreetings extends ArrayList<Greeting> {}

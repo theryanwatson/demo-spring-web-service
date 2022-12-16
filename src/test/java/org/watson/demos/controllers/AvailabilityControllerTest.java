@@ -1,6 +1,7 @@
 package org.watson.demos.controllers;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import jakarta.annotation.Resource;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.availability.LivenessState;
@@ -11,7 +12,6 @@ import org.springframework.context.annotation.Import;
 import org.watson.demos.models.HealthStatus;
 import org.watson.demos.services.AvailabilityService;
 
-import jakarta.annotation.Resource;
 import java.util.Map;
 
 import static org.mockito.Mockito.verify;

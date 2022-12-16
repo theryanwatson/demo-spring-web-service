@@ -1,5 +1,6 @@
 package org.watson.demos.services;
 
+import jakarta.annotation.Resource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -21,7 +22,6 @@ import org.springframework.context.annotation.Primary;
 import org.watson.demos.events.HealthEvent;
 import org.watson.demos.models.HealthStatus;
 
-import jakarta.annotation.Resource;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;

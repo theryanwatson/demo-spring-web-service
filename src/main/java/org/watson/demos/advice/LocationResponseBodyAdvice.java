@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Adds id location data to the response header.<p/>
@@ -71,7 +70,7 @@ public class LocationResponseBodyAdvice implements ResponseBodyAdvice<Collection
                     .map(Identifiable::getId)
                     .map(this::toRelativeLocationPath)
                     .filter(Objects::nonNull)
-                    .collect(Collectors.toUnmodifiableList());
+                    .toList();
 
             if (relativePaths.size() == 1) {
                 log.debug("Setting {} header.", HttpHeaders.LOCATION);

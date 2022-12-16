@@ -29,7 +29,6 @@ import org.watson.demos.models.Identifiable;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -96,7 +95,7 @@ class LocationResponseBodyAdviceTest {
         advice.beforeBodyWrite(EXPECTED, null, null, null, request, response);
 
         assertThat(headers.get(HttpHeaders.CONTENT_LOCATION))
-                .containsExactlyInAnyOrderElementsOf(EXPECTED.stream().map(e -> "/" + e.getId()).collect(Collectors.toList()));
+                .containsExactlyInAnyOrderElementsOf(EXPECTED.stream().map(e -> "/" + e.getId()).toList());
     }
 
     @NullAndEmptySource

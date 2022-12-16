@@ -12,7 +12,6 @@ import org.watson.demos.repositories.GreetingRepository;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -35,7 +34,7 @@ public class GreetingService {
 
     public Collection<Greeting> createAll(@NonNull final Iterable<Greeting> greetings) {
         return StreamSupport.stream(repository.saveAll(greetings).spliterator(), false)
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
     }
 
     public void deleteAll(@NonNull final Iterable<UUID> ids) {

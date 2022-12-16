@@ -7,7 +7,6 @@ import org.watson.demos.models.Identifiable;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @UtilityClass
@@ -22,7 +21,7 @@ public class GeneratorTestUtility {
                         .locale(AVAILABLE_LOCALES[i % AVAILABLE_LOCALES.length])
                         .content(content + " " + i))
                 .map(Greeting.GreetingBuilder::build)
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
     }
 
     public static List<Identifiable> generateIdentifiable(final String content, final int count) {
@@ -31,7 +30,8 @@ public class GeneratorTestUtility {
                         .id(i)
                         .content(content + " " + i))
                 .map(ExampleIdentifiable.ExampleIdentifiableBuilder::build)
-                .collect(Collectors.toUnmodifiableList());
+                .map(Identifiable.class::cast)
+                .toList();
     }
 
     public static List<Identifiable> generateIdentifiable(final String content) {

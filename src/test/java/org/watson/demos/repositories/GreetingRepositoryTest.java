@@ -1,5 +1,6 @@
 package org.watson.demos.repositories;
 
+import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
@@ -7,14 +8,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.watson.demos.models.Greeting;
 
-import jakarta.annotation.Resource;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +34,7 @@ class GreetingRepositoryTest {
 
         assertThat(actual).isNotNull();
         assertThat(actual.getTotalElements()).isEqualTo(TEST_VALUES.size());
-        assertThat(actual.get().collect(Collectors.toUnmodifiableList())).containsExactlyInAnyOrderElementsOf(TEST_VALUES);
+        assertThat(actual.get().toList()).containsExactlyInAnyOrderElementsOf(TEST_VALUES);
     }
 
     @Test
@@ -95,6 +94,6 @@ class GreetingRepositoryTest {
     private List<Greeting> saveAll(final Greeting... entries) {
         return StreamSupport
                 .stream(repository.saveAll(Arrays.asList(entries)).spliterator(), false)
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
     }
 }

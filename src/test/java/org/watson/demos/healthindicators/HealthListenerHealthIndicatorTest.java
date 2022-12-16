@@ -1,5 +1,6 @@
 package org.watson.demos.healthindicators;
 
+import jakarta.annotation.Resource;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -8,7 +9,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.watson.demos.events.HealthEvent;
 import org.watson.demos.models.HealthStatus;
 
-import jakarta.annotation.Resource;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;

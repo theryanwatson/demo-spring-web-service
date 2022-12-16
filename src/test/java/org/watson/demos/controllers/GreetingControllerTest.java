@@ -1,6 +1,7 @@
 package org.watson.demos.controllers;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -12,7 +13,6 @@ import org.watson.demos.models.Greeting;
 import org.watson.demos.models.GreetingProbe;
 import org.watson.demos.services.GreetingService;
 
-import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;

@@ -1,6 +1,7 @@
 package org.watson.demos.converters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.context.annotation.UserConfigurations;
@@ -16,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
-import jakarta.annotation.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;

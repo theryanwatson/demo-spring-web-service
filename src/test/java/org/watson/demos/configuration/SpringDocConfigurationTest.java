@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.time.temporal.ChronoUnit.MILLIS;
@@ -179,7 +178,7 @@ class SpringDocConfigurationTest {
                 .map(PathItem::readOperations)
                 .flatMap(Collection::stream)
                 .map(Operation::getResponses)
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
 
         assertThat(apiResponses).allSatisfy(response -> assertThat(response).containsOnlyKeys(SHARED_ERROR_CODES));
 
