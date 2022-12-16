@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.watson.demos.utilities.ConverterTestUtility.toQueryString;
 import static org.watson.demos.utilities.GeneratorTestUtility.generateGreetings;
 
-@Tag(IntegrationSuite.TAG)
+@Tag("Integration")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureTestDatabase
