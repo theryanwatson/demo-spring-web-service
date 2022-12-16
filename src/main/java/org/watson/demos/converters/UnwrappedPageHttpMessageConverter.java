@@ -3,10 +3,8 @@ package org.watson.demos.converters;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.system.JavaVersion;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -31,7 +29,6 @@ import java.util.stream.Stream;
  * @see UnwrappedPageResponseBodyAdvice
  */
 @ConditionalOnWebApplication
-@ConditionalOnJava(JavaVersion.SEVENTEEN)
 @ConditionalOnProperty("server.response.unwrap.page")
 @Component
 public class UnwrappedPageHttpMessageConverter extends AbstractHttpMessageConverter<Page<?>> {
