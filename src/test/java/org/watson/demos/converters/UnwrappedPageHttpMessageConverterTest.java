@@ -70,7 +70,7 @@ class UnwrappedPageHttpMessageConverterTest {
                 .noneMatch(c -> converter.canRead(c, null));
     }
 
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings("DataFlowIssue")
     @Test
     void readAlwaysThrows() {
         assertThatThrownBy(() -> converter.read(null, null))

@@ -160,7 +160,7 @@ class LocationResponseBodyAdviceTest {
         );
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "SameReturnValue", "EmptyMethod"})
     private static class ExampleMethodController {
         @SneakyThrows
         private static MethodParameter getMethodParameter(String methodName) {

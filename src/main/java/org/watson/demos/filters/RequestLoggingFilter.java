@@ -32,8 +32,7 @@ public class RequestLoggingFilter implements OrderedFilter {
         try {
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
-            if (servletRequest instanceof HttpServletRequest) {
-                final HttpServletRequest request = (HttpServletRequest) servletRequest;
+            if (servletRequest instanceof final HttpServletRequest request) {
                 log.info("{}={}{};client={};status={};duration={}",
                         request.getMethod(),
                         request.getRequestURI(),

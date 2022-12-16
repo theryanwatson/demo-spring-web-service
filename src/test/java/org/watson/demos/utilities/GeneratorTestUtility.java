@@ -34,15 +34,10 @@ public class GeneratorTestUtility {
                 .toList();
     }
 
-    public static List<Identifiable> generateIdentifiable(final String content) {
-        return generateIdentifiable(content, CONTENT_COUNT);
+    @Builder
+    private record ExampleIdentifiable(Integer id, String content) implements Identifiable {
+        public Integer getId() {
+            return id();
+        }
     }
-
-    @Builder(toBuilder = true)
-    @lombok.Value
-    private static class ExampleIdentifiable implements Identifiable {
-        Integer id;
-        String content;
-    }
-
 }
