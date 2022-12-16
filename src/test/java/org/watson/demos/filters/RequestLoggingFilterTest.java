@@ -132,7 +132,7 @@ class RequestLoggingFilterTest {
 
     @Test
     void getOrder_isSet() {
-        assertThat(filter.getOrder()).isNotNull();
+        assertThat(filter.getOrder()).isNotZero();
     }
 
     private void assertLogLineMatches(final String logLinePrefix, final HttpServletRequest request, final ServletResponse response) throws IOException, ServletException {
