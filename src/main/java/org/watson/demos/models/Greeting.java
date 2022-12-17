@@ -32,7 +32,7 @@ import java.util.UUID;
 @Setter(AccessLevel.PROTECTED) // For @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // For @Entity
 @AllArgsConstructor(access = AccessLevel.PRIVATE) // For @Builder
-public class Greeting implements Identifiable, Serializable {
+public class Greeting implements Identifiable, Localizable, Serializable {
     @Id
     @GeneratedValue
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
