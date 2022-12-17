@@ -6,13 +6,14 @@ import lombok.Builder;
 import org.springdoc.core.annotations.ParameterObject;
 import org.watson.demos.validation.constraints.ValidLocale;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 @ParameterObject
 @lombok.Value
 @Builder
 @JsonDeserialize(builder = GreetingProbe.GreetingProbeBuilder.class)
-public class GreetingProbe {
+public class GreetingProbe implements Localizable, Serializable {
     @ValidLocale
     @Schema(type = "string", format = "locale")
     Locale locale;
