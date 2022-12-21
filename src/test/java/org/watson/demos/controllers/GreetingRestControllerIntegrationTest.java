@@ -33,7 +33,6 @@ import javax.annotation.Resource;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +55,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.watson.demos.utilities.ConverterTestUtility.subList;
 import static org.watson.demos.utilities.ConverterTestUtility.toBiConsumer;
 import static org.watson.demos.utilities.ConverterTestUtility.toQueryString;
 import static org.watson.demos.utilities.GeneratorTestUtility.generateGreetings;
@@ -249,13 +249,6 @@ class GreetingControllerIntegrationTest {
 
     private int calculateTotalPages(final Pageable pageable) {
         return (int) Math.ceil(EXPECTED_VALUES.size() / (double) (pageable.isUnpaged() ? 20 : pageable.getPageSize()));
-    }
-
-    private <T> List<T> subList(final Collection<T> collection, final long offset, final long size) {
-        return collection.stream()
-                .skip(offset % collection.size())
-                .limit(size % collection.size())
-                .collect(Collectors.toUnmodifiableList());
     }
 
     private static class ListOfGreetings extends ArrayList<Greeting> {}

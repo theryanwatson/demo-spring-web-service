@@ -15,6 +15,13 @@ import java.util.stream.Collectors;
 
 @UtilityClass
 public class ConverterTestUtility {
+    public static <T> List<T> subList(final Collection<T> collection, final long offset, final long size) {
+        return collection.stream()
+                .skip(offset)
+                .limit(size)
+                .collect(Collectors.toList());
+    }
+
     public static <K, V> Consumer<Map.Entry<K, V>> toBiConsumer(final BiConsumer<K, V> consumer) {
         return e -> consumer.accept(e.getKey(), e.getValue());
     }
