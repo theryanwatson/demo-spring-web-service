@@ -65,8 +65,8 @@ import static org.watson.demos.utilities.GeneratorTestUtility.generateGreetings;
 
 @Tag("Integration")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@WebMvcTest(GreetingController.class)
-class GreetingControllerIntegrationTest {
+@WebMvcTest(GreetingRestController.class)
+class GreetingRestControllerIntegrationTest {
     private static final String VERSION_1 = "v1";
     private static final Map<UUID, Greeting> INPUT_VALUES = new LinkedHashMap<>();
     private static final Map<UUID, Greeting> EXPECTED_VALUES = generateGreetings("integrate").stream()
