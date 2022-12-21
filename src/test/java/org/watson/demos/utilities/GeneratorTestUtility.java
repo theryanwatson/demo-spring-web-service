@@ -28,7 +28,7 @@ public class GeneratorTestUtility {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public static List<Identifiable> generateIdentifiable(final String content, final int count) {
+    public static List<Identifiable<?>> generateIdentifiable(final String content, final int count) {
         return IntStream.range(0, count).boxed()
                 .map(i -> ExampleIdentifiable.builder()
                         .id(i)
@@ -37,13 +37,13 @@ public class GeneratorTestUtility {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public static List<Identifiable> generateIdentifiable(final String content) {
+    public static List<Identifiable<?>> generateIdentifiable(final String content) {
         return generateIdentifiable(content, CONTENT_COUNT);
     }
 
     @Builder(toBuilder = true)
     @lombok.Value
-    private static class ExampleIdentifiable implements Identifiable {
+    private static class ExampleIdentifiable implements Identifiable<Integer> {
         Integer id;
         String content;
     }
