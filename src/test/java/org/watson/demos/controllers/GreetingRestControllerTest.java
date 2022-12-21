@@ -28,16 +28,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.watson.demos.utilities.GeneratorTestUtility.generateGreetings;
 
-@SpringBootTest(classes = GreetingController.class)
+@SpringBootTest(classes = GreetingRestController.class)
 @Import(SimpleMeterRegistry.class)
-class GreetingControllerTest {
+class GreetingRestControllerTest {
     private static final List<Greeting> TEST_CONTENT = generateGreetings("controller-content");
 
     @MockBean
     private GreetingService service;
 
     @Resource
-    private GreetingController controller;
+    private GreetingRestController controller;
 
     @Test
     void getOne_passesThroughToService() {

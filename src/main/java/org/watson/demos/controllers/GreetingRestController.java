@@ -32,7 +32,7 @@ import java.util.UUID;
 @Timed(value = "http.greetings.requests", extraTags = {"version", "1"}, description = "/greetings")
 @RequestMapping(path = "${server.rest.path.root:}/greetings", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
-public class GreetingController {
+public class GreetingRestController {
     private final GreetingService service;
 
     @GetMapping("{id}")
