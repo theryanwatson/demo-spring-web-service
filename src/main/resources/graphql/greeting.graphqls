@@ -1,0 +1,22 @@
+input GreetingInput {
+    content: String!
+    locale: String
+}
+
+type Greeting {
+    id: ID!
+    content: String!
+    locale: String
+    created: String!
+}
+
+type Query {
+    greeting(id: ID!): Greeting
+    greetings(locale: String, page: Int = 0, size: Int = 20, sort: [String!]): [Greeting]!
+}
+
+type Mutation {
+    createGreeting(greeting: GreetingInput!): Greeting
+    createGreetings(greetings: [GreetingInput]!): [Greeting]
+    deleteGreetings(ids: [ID]!): Boolean
+}
