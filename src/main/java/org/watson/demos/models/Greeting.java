@@ -35,6 +35,12 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // For @Entity
 @AllArgsConstructor(access = AccessLevel.PRIVATE) // For @Builder
 public class Greeting implements Identifiable, Localizable, Serializable {
+
+    /** For GraphQL. Public writable fields matching GreetingInput. */
+    public Greeting(final String content, final Locale locale) {
+        this(null, content, locale != null ? locale : Locale.getDefault(), null);
+    }
+
     @Id
     @GeneratedValue
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
