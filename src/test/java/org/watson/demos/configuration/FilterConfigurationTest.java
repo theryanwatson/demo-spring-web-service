@@ -38,7 +38,7 @@ class FilterConfigurationTest {
     @ParameterizedTest
     void filterBeansDisabledByTracingDisabled(final String beanName) {
         contextRunner.withPropertyValues("spring.config.location=classpath:empty.properties")
-                .withPropertyValues("management.tracing.enabled=false")
+                .withPropertyValues("management.trace.http.enabled=false")
                 .run(context -> assertThat(context).doesNotHaveBean(beanName));
     }
 

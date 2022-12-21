@@ -34,7 +34,7 @@ class GreetingRepositoryTest {
     @Test
     void saveAll_writesToRepository() {
         List<Greeting> saved = StreamSupport.stream(repository.saveAll(TEST_VALUES).spliterator(), false)
-                .collect(Collectors.toList());
+                .collect(Collectors.toUnmodifiableList());
 
         final Page<Greeting> actualPage = repository.findAll(Pageable.unpaged());
         assertThat(actualPage).isNotNull();

@@ -96,7 +96,7 @@ class LocationResponseBodyAdviceTest {
         advice.beforeBodyWrite(EXPECTED, null, null, null, request, response);
 
         assertThat(headers.get(HttpHeaders.CONTENT_LOCATION))
-                .containsExactlyInAnyOrderElementsOf(EXPECTED.stream().map(e -> "/" + e.getId()).collect(Collectors.toList()));
+                .containsExactlyInAnyOrderElementsOf(EXPECTED.stream().map(e -> "/" + e.getId()).collect(Collectors.toUnmodifiableList()));
     }
 
     @NullAndEmptySource

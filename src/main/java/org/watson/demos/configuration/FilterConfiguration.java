@@ -2,7 +2,6 @@ package org.watson.demos.configuration;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -38,8 +37,7 @@ class FilterConfiguration {
     }
 
     @Bean
-    @ConditionalOnBean(TraceService.class)
-    @ConditionalOnProperty(value = "server.response.trace.header.enabled", matchIfMissing = true)
+    @ConditionalOnProperty(value = {"server.response.trace.header.enabled", "management.trace.http.enabled"}, matchIfMissing = true)
     Filter traceIdHeaderResponseFilter(final TraceService traceService, @Value("${server.response.trace.header.name:Trace-Id}") final String traceHeaderName) {
         return (request, response, chain) -> {
             traceService.getCurrentTraceId()

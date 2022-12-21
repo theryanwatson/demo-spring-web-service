@@ -19,7 +19,7 @@ public class ConverterTestUtility {
         return collection.stream()
                 .skip(offset)
                 .limit(size)
-                .collect(Collectors.toList());
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public static <K, V> Consumer<Map.Entry<K, V>> toBiConsumer(final BiConsumer<K, V> consumer) {

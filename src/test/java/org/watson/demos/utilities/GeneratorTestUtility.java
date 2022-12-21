@@ -16,7 +16,7 @@ public class GeneratorTestUtility {
 
     private static final List<Locale> AVAILABLE_LOCALES = Arrays.stream(Locale.getAvailableLocales())
             .filter(l -> !(l.toString().contains("#") || l.toString().isEmpty()))
-            .collect(Collectors.toList());
+            .collect(Collectors.toUnmodifiableList());
     private static final int CONTENT_COUNT = 10;
 
     public static List<Greeting> generateGreetings(final String content) {

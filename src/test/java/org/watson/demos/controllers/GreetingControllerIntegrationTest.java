@@ -107,7 +107,7 @@ class GreetingControllerIntegrationTest {
                         .collect(Collectors.collectingAndThen(Collectors.toUnmodifiableSet(),
                                 in -> EXPECTED_VALUES.values().stream()
                                         .filter(g -> in.contains(g.getContent()))
-                                        .collect(Collectors.toList()))));
+                                        .collect(Collectors.toUnmodifiableList()))));
 
         when(service.getAll(any(), any()))
                 .thenAnswer(a -> {
@@ -236,10 +236,10 @@ class GreetingControllerIntegrationTest {
     private void assertActualMatchesExpected(final MvcResult result, final List<Greeting> expected) {
         final List<Greeting> expectedSorted = expected.stream()
                 .sorted(Comparator.comparing(Greeting::getContent))
-                .collect(Collectors.toList());
+                .collect(Collectors.toUnmodifiableList());
         final List<Greeting> actual = objectMapper.readValue(result.getResponse().getContentAsString(), ListOfGreetings.class).stream()
                 .sorted(Comparator.comparing(Greeting::getContent))
-                .collect(Collectors.toList());
+                .collect(Collectors.toUnmodifiableList());
 
         assertThat(actual).hasSize(expected.size());
 
