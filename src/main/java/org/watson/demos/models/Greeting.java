@@ -21,7 +21,9 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -56,6 +58,6 @@ public class Greeting implements Identifiable, Localizable, Serializable {
 
     @PrePersist
     protected void onCreate() {
-        created = ZonedDateTime.now().withNano(0);
+        created = ZonedDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.MILLIS);
     }
 }
