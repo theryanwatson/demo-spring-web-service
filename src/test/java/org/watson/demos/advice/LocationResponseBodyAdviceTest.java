@@ -39,7 +39,7 @@ import static org.watson.demos.utilities.GeneratorTestUtility.generateIdentifiab
 @ImportAutoConfiguration(SpringDataWebAutoConfiguration.class)
 class LocationResponseBodyAdviceTest {
     private static final String FAKE_URI = "https://www.fake.fake:5150/things/cool";
-    private static final List<Identifiable> EXPECTED = generateIdentifiable("advice", 11);
+    private static final List<Identifiable<?>> EXPECTED = generateIdentifiable("advice", 11);
 
     private final HttpHeaders headers = new HttpHeaders();
 
@@ -101,7 +101,7 @@ class LocationResponseBodyAdviceTest {
     @NullAndEmptySource
     @MethodSource
     @ParameterizedTest
-    void beforeBodyWrite_invalid_writesNoLocationHeaders(final List<Identifiable> entries) {
+    void beforeBodyWrite_invalid_writesNoLocationHeaders(final List<Identifiable<?>> entries) {
         advice.beforeBodyWrite(entries, null, null, null, request, response);
 
         assertThat(headers.getLocation()).isNull();
@@ -110,7 +110,7 @@ class LocationResponseBodyAdviceTest {
 
     static Stream<Arguments> beforeBodyWrite_invalid_writesNoLocationHeaders() {
         return Stream.of(
-                Arguments.of(List.<Identifiable>of(() -> null))
+                Arguments.of(List.<Identifiable<?>>of(() -> null))
         );
     }
 
@@ -123,7 +123,7 @@ class LocationResponseBodyAdviceTest {
 
     @MethodSource
     @ParameterizedTest
-    void beforeBodyWrite_managesBeingMisconfigured(final String headerSize, final String reserveSize, final String charLength, int expectedSize, final Collection<Identifiable> input) {
+    void beforeBodyWrite_managesBeingMisconfigured(final String headerSize, final String reserveSize, final String charLength, int expectedSize, final Collection<Identifiable<?>> input) {
         new WebApplicationContextRunner()
                 .withConfiguration(UserConfigurations.of(LocationResponseBodyAdvice.class))
                 .withBean("conversionService", ApplicationConversionService.class)
@@ -148,7 +148,7 @@ class LocationResponseBodyAdviceTest {
 
     static Stream<Arguments> beforeBodyWrite_managesBeingMisconfigured() {
         final int inputSize = 150;
-        final Named<List<Identifiable>> input = Named.of("ExampleIdentifiable[" + inputSize + "]", generateIdentifiable("input", inputSize));
+        final Named<List<Identifiable<?>>> input = Named.of("ExampleIdentifiable[" + inputSize + "]", generateIdentifiable("input", inputSize));
         return Stream.of(
                 Arguments.of("8KB", "3KB", "36", 142, input), // Default config
                 Arguments.of("1KB", "1KB", "1", 0, input), // 0 Header Space
@@ -168,12 +168,12 @@ class LocationResponseBodyAdviceTest {
         }
 
         @ResponseStatus(HttpStatus.CREATED)
-        Collection<Identifiable> supportedMethod() {return null;}
+        Collection<Identifiable<?>> supportedMethod() {return null;}
 
         @ResponseStatus(HttpStatus.ACCEPTED)
-        Collection<Identifiable> unsupportedResponseStatus() {return null;}
+        Collection<Identifiable<?>> unsupportedResponseStatus() {return null;}
 
-        Collection<Identifiable> unspecifiedResponseStatus() {return null;}
+        Collection<Identifiable<?>> unspecifiedResponseStatus() {return null;}
 
         @ResponseStatus(HttpStatus.CREATED)
         String unsupportedReturnType() {return null;}

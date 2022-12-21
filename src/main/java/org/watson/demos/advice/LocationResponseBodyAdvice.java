@@ -44,7 +44,7 @@ import java.util.Optional;
 @Slf4j
 @ConditionalOnWebApplication
 @ControllerAdvice(annotations = RestController.class)
-public class LocationResponseBodyAdvice implements ResponseBodyAdvice<Collection<? extends Identifiable>> {
+public class LocationResponseBodyAdvice implements ResponseBodyAdvice<Collection<? extends Identifiable<?>>> {
 
     private final String prefix;
     private final long maxHeaderCount;
@@ -63,8 +63,8 @@ public class LocationResponseBodyAdvice implements ResponseBodyAdvice<Collection
     }
 
     @Override
-    public Collection<? extends Identifiable> beforeBodyWrite(@Nullable final Collection<? extends Identifiable> body, @Nullable final MethodParameter ignored1, @Nullable final MediaType ignored2, @Nullable final Class<? extends HttpMessageConverter<?>> ignored3,
-                                                              @NonNull final ServerHttpRequest request, @NonNull final ServerHttpResponse response) {
+    public Collection<? extends Identifiable<?>> beforeBodyWrite(@Nullable final Collection<? extends Identifiable<?>> body, @Nullable final MethodParameter ignored1, @Nullable final MediaType ignored2, @Nullable final Class<? extends HttpMessageConverter<?>> ignored3,
+                                                                 @NonNull final ServerHttpRequest request, @NonNull final ServerHttpResponse response) {
         if (body != null) {
             final List<String> relativePaths = body.stream()
                     .map(Identifiable::getId)
