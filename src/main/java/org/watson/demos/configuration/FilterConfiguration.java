@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.watson.demos.filters.RequestLoggingFilter;
 import org.watson.demos.services.TraceService;
 
@@ -22,7 +23,8 @@ class FilterConfiguration {
 
     @Bean
     @ConditionalOnProperty(value = "server.request.logging.enabled", matchIfMissing = true)
-    FilterRegistrationBean<RequestLoggingFilter> requestLoggingRegistrationBean(@Value("${server.rest.path.root}") final Optional<String> rootPath) {
+    FilterRegistrationBean<RequestLoggingFilter> requestLoggingRegistrationBean(@Value("${server.request.logging.path.root:${spring.data.rest.base-path:#{null}}}") final Optional<String> rootPath,
+                                                                                @Value("${server.request.logging.order:#{null}}") final Optional<Integer> order) {
         final RequestLoggingFilter filter = new RequestLoggingFilter();
         final String urlPattern = rootPath
                 .map(String::trim)
@@ -31,7 +33,7 @@ class FilterConfiguration {
                 .orElse("/");
         return new FilterRegistrationBean<>(filter) {{
             addUrlPatterns(urlPattern + "*");
-            setOrder(filter.getOrder());
+            setOrder(order.orElse(Ordered.HIGHEST_PRECEDENCE + 2));
         }};
     }
 

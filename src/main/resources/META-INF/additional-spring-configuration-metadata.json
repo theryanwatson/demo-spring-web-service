@@ -13,13 +13,6 @@
       "sourceType": "org.watson.demos.advice.UnwrappedExceptionResolver"
     },
     {
-      "name": "server.rest.path.root",
-      "type": "java.lang.String",
-      "description": "Server root path for all logged endpoints.",
-      "sourceType": "org.watson.demos.configuration.FilterConfiguration",
-      "defaultValue": "/"
-    },
-    {
       "name": "server.response.unwrap.page",
       "type": "java.lang.Boolean",
       "description": "Enable to convert http response object from Page to Collection.",

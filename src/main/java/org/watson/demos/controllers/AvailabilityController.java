@@ -22,7 +22,7 @@ import java.util.Map;
 @Validated
 @RequiredArgsConstructor
 @Timed(value = "http.availability.requests", extraTags = {"version", "1"}, description = "/availability")
-@RequestMapping(path = "${server.rest.path.root}/availability", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "${spring.data.rest.base-path:}/availability", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
 public class AvailabilityController {
     private final AvailabilityService service;
