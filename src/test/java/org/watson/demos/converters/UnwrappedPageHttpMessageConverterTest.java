@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.geo.GeoPage;
@@ -28,12 +29,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {UnwrappedPageHttpMessageConverter.class, ObjectMapper.class})
+@SpringBootTest(classes = UnwrappedPageHttpMessageConverter.class)
+@Import(ObjectMapper.class)
 class UnwrappedPageHttpMessageConverterTest {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
             .withConfiguration(UserConfigurations.of(UnwrappedPageHttpMessageConverter.class));
 
+    @Resource
+    private ObjectMapper objectMapper;
     @Resource
     private HttpMessageConverter<Page<?>> converter;
 
@@ -49,7 +52,7 @@ class UnwrappedPageHttpMessageConverterTest {
         when(message.getHeaders()).thenReturn(new HttpHeaders());
 
         converter.write(new PageImpl<>(expected), MediaType.APPLICATION_JSON, message);
-        assertThat(OBJECT_MAPPER.readValue(stream.toString(), new TypeReference<List<String>>() {})).isEqualTo(expected);
+        assertThat(objectMapper.readValue(stream.toString(), new TypeReference<List<String>>() {})).isEqualTo(expected);
     }
 
     @Test
