@@ -38,7 +38,7 @@ public class GreetingRestController {
     @GetMapping("{id}")
     public Greeting getGreeting(@PathVariable final UUID id) {
         return service.getOne(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("greeting '%s' Not Found", id)));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "greeting '%s' Not Found".formatted(id)));
     }
 
     @GetMapping
