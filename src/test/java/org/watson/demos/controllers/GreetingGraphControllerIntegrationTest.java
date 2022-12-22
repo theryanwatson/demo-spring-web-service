@@ -58,6 +58,7 @@ class GreetingGraphControllerIntegrationTest {
             .peek(toBiConsumer(INPUT_VALUES::put))
             .map(e -> e.getValue().toBuilder().id(e.getKey()))
             .map(g -> g.created(ZonedDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.MILLIS)))
+            .map(g -> g.modified(ZonedDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.MILLIS)))
             .map(Greeting.GreetingBuilder::build)
             .collect(Collectors.toUnmodifiableMap(Greeting::getId, Function.identity()));
 
@@ -105,6 +106,7 @@ class GreetingGraphControllerIntegrationTest {
                 "    content" +
                 "    locale" +
                 "    created" +
+                "    modified" +
                 "  }" +
                 "}");
 
@@ -142,6 +144,7 @@ class GreetingGraphControllerIntegrationTest {
                 "    content" +
                 "    locale" +
                 "    created" +
+                "    modified" +
                 "  }" +
                 "}");
 
@@ -180,6 +183,7 @@ class GreetingGraphControllerIntegrationTest {
                 "    content" +
                 "    locale" +
                 "    created" +
+                "    modified" +
                 "  }" +
                 "}");
 
@@ -191,7 +195,8 @@ class GreetingGraphControllerIntegrationTest {
                     a -> assertThat(a.getId()).isEqualTo(expectedEntry.getId()),
                     a -> assertThat(a.getLocale()).isEqualTo(expectedEntry.getLocale()),
                     a -> assertThat(a.getContent()).isEqualTo(expectedEntry.getContent()),
-                    a -> assertThat(a.getCreated()).isEqualTo(expectedEntry.getCreated())
+                    a -> assertThat(a.getCreated()).isEqualTo(expectedEntry.getCreated()),
+                    a -> assertThat(a.getModified()).isEqualTo(expectedEntry.getModified())
             );
 
             verify(service).getOne(id);
@@ -228,6 +233,7 @@ class GreetingGraphControllerIntegrationTest {
                     a -> assertThat(a).isNotNull(),
                     a -> assertThat(a.getId()).isNotNull(),
                     a -> assertThat(a.getCreated()).isBetween(ZonedDateTime.now().minusMinutes(5), ZonedDateTime.now()),
+                    a -> assertThat(a.getModified()).isBetween(ZonedDateTime.now().minusMinutes(5), ZonedDateTime.now()),
                     a -> assertThat(a.getLocale()).isEqualTo(expectedEntry.getLocale()),
                     a -> assertThat(a.getContent()).isEqualTo(expectedEntry.getContent())
             );
