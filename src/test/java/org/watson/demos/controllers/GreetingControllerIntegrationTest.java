@@ -32,7 +32,10 @@ import org.watson.demos.services.GreetingService;
 import javax.annotation.Resource;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +73,7 @@ class GreetingControllerIntegrationTest {
             .map(g -> Map.entry(UUID.randomUUID(), g))
             .peek(toBiConsumer(INPUT_VALUES::put))
             .map(e -> e.getValue().toBuilder().id(e.getKey()))
-            .map(g -> g.created(ZonedDateTime.now(ZoneId.of("UTC")).withNano(0)))
+            .map(g -> g.created(ZonedDateTime.now(ZoneId.of("UTC")).truncatedTo(ChronoUnit.MILLIS)))
             .map(Greeting.GreetingBuilder::build)
             .collect(Collectors.toUnmodifiableMap(Greeting::getId, Function.identity()));
 
@@ -96,7 +99,7 @@ class GreetingControllerIntegrationTest {
                 .thenAnswer(a -> Optional.ofNullable(EXPECTED_VALUES.get(a.getArgument(0, UUID.class))));
 
         when(service.createAll(anyCollection()))
-                .thenAnswer(a -> ((List<?>) a.getArgument(0, ArrayList.class)).stream()
+                .thenAnswer(a -> ((Collection<?>) a.getArgument(0, Collection.class)).stream()
                         .filter(Greeting.class::isInstance)
                         .map(Greeting.class::cast)
                         .map(Greeting::getContent)
@@ -181,7 +184,7 @@ class GreetingControllerIntegrationTest {
     @SneakyThrows
     @MethodSource
     @ParameterizedTest
-    void deleteGreeting(final List<UUID> ids) {
+    void deleteGreeting(final Collection<UUID> ids) {
         mockMvc.perform(delete("/{version}/greetings" + toQueryString(ids, e -> e, "id"), VERSION_1))
                 .andExpect(status().isNoContent());
 
@@ -230,12 +233,17 @@ class GreetingControllerIntegrationTest {
 
     @SneakyThrows
     private void assertActualMatchesExpected(final MvcResult result, final List<Greeting> expected) {
-        final List<Greeting> actual = objectMapper.readValue(result.getResponse().getContentAsString(), ListOfGreetings.class);
+        final List<Greeting> expectedSorted = expected.stream()
+                .sorted(Comparator.comparing(Greeting::getContent))
+                .collect(Collectors.toList());
+        final List<Greeting> actual = objectMapper.readValue(result.getResponse().getContentAsString(), ListOfGreetings.class).stream()
+                .sorted(Comparator.comparing(Greeting::getContent))
+                .collect(Collectors.toList());
 
         assertThat(actual).hasSize(expected.size());
 
         for (int i = 0; i < expected.size(); i++) {
-            final Greeting expectedEntry = expected.get(i);
+            final Greeting expectedEntry = expectedSorted.get(i);
 
             assertThat(actual.get(i)).satisfies(
                     a -> assertThat(a).isNotNull(),

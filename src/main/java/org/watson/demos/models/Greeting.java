@@ -1,14 +1,13 @@
 package org.watson.demos.models;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 import org.watson.demos.validation.constraints.ValidLocale;
 
 import javax.persistence.Basic;
@@ -16,25 +15,27 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotBlank;
-import java.io.Serializable;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.UUID;
 
-@Data
-@Builder(toBuilder = true)
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // For @Entity
+@EqualsAndHashCode(callSuper = true)
+@SuperBuilder(toBuilder = true)
+@ToString(callSuper = true)
+@Getter
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"content", "locale"}))
-@Setter(AccessLevel.PROTECTED) // For @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED) // For @Entity
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // For @Builder
-public class Greeting implements Identifiable<UUID>, Localizable, Serializable {
+public class Greeting extends ZonedAuditable<UUID> implements Localizable {
+
+    /** For GraphQL: Writable field constructor. */
+    public Greeting(final String content, final Locale locale) {
+        this.content = content;
+        this.locale = locale;
+    }
+
     @Id
     @GeneratedValue
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
@@ -49,15 +50,4 @@ public class Greeting implements Identifiable<UUID>, Localizable, Serializable {
     @Builder.Default
     @Schema(type = "string", format = "locale")
     private Locale locale = Locale.getDefault();
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC", shape = JsonFormat.Shape.STRING)
-    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
-    @Basic(optional = false)
-    @CreatedDate
-    private ZonedDateTime created;
-
-    @PrePersist
-    protected void onCreate() {
-        created = ZonedDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.MILLIS);
-    }
 }
