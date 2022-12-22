@@ -125,11 +125,6 @@ class RequestLoggingFilterTest {
         verify(mockChain).doFilter(mockRequest, mockResponse);
     }
 
-    @Test
-    void getOrder_isSet() {
-        assertThat(filter.getOrder()).isNotZero();
-    }
-
     private void assertLogLineMatches(final String logLinePrefix, final HttpServletRequest request, final ServletResponse response) throws IOException, ServletException {
         assertThat(listAppender.list).hasSize(1);
         assertThat(listAppender.list.get(0).getLevel()).isEqualTo(Level.INFO);

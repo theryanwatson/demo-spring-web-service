@@ -30,7 +30,7 @@ import java.util.UUID;
 @Validated
 @RequiredArgsConstructor
 @Timed(value = "http.greetings.requests", extraTags = {"version", "1"}, description = "/greetings")
-@RequestMapping(path = "${server.rest.path.root:}/greetings", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "${spring.data.rest.base-path:}/greetings", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
 public class GreetingController {
     private final GreetingService service;
