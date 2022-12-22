@@ -8,6 +8,7 @@ type Greeting {
     content: String!
     locale: String
     created: String!
+    modified: String!
 }
 
 type Query {
