@@ -74,6 +74,7 @@ class GreetingControllerIntegrationTest {
             .peek(toBiConsumer(INPUT_VALUES::put))
             .map(e -> e.getValue().toBuilder().id(e.getKey()))
             .map(g -> g.created(ZonedDateTime.now(ZoneId.of("UTC")).truncatedTo(ChronoUnit.MILLIS)))
+            .map(g -> g.modified(ZonedDateTime.now(ZoneId.of("UTC")).truncatedTo(ChronoUnit.MILLIS)))
             .map(Greeting.GreetingBuilder::build)
             .collect(Collectors.toUnmodifiableMap(Greeting::getId, Function.identity()));
 
@@ -249,6 +250,7 @@ class GreetingControllerIntegrationTest {
                     a -> assertThat(a).isNotNull(),
                     a -> assertThat(a.getId()).isNotNull(),
                     a -> assertThat(a.getCreated()).isBetween(ZonedDateTime.now().minusMinutes(5), ZonedDateTime.now()),
+                    a -> assertThat(a.getModified()).isBetween(ZonedDateTime.now().minusMinutes(5), ZonedDateTime.now()),
                     a -> assertThat(a.getLocale()).isEqualTo(expectedEntry.getLocale()),
                     a -> assertThat(a.getContent()).isEqualTo(expectedEntry.getContent())
             );
