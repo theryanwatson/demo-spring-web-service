@@ -1,19 +1,17 @@
 package org.watson.demos.configuration;
 
-import brave.Span;
-import brave.Tracer;
-import brave.propagation.TraceContext;
 import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.watson.demos.filters.RequestLoggingFilter;
+import org.watson.demos.services.TraceService;
 
 import java.util.Optional;
 
@@ -38,13 +36,11 @@ class FilterConfiguration {
     }
 
     @Bean
-    @ConditionalOnBean(Tracer.class)
+    @ConditionalOnEnabledTracing
     @ConditionalOnProperty(value = "server.response.trace.header.enabled", matchIfMissing = true)
-    Filter traceIdHeaderResponseFilter(final Optional<Tracer> tracer, @Value("${server.response.trace.header.name:Trace-Id}") final String traceHeaderName) {
+    Filter traceIdHeaderResponseFilter(final TraceService traceService, @Value("${server.response.trace.header.name:Trace-Id}") final String traceHeaderName) {
         return (request, response, chain) -> {
-            tracer.map(Tracer::currentSpan)
-                    .map(Span::context)
-                    .map(TraceContext::traceIdString)
+            traceService.getCurrentTraceId()
                     .ifPresent(traceId -> ((HttpServletResponse) response).addHeader(traceHeaderName, traceId));
             chain.doFilter(request, response);
         };

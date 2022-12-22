@@ -1,7 +1,5 @@
 package org.watson.demos.configuration;
 
-import brave.Tracer;
-import brave.Tracing;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -9,6 +7,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.watson.demos.filters.RequestLoggingFilter;
+import org.watson.demos.services.TraceService;
 
 import java.util.Optional;
 
@@ -24,7 +23,7 @@ class FilterConfigurationTest {
     @ParameterizedTest
     void filterBeansEnabledByDefault(final String beanName) {
         contextRunner.withPropertyValues("spring.config.location=classpath:empty.properties")
-                .withBean(Tracer.class, Tracing::currentTracer)
+                .withBean(TraceService.class)
                 .run(context -> assertThat(context).hasBean(beanName));
     }
 
@@ -33,6 +32,14 @@ class FilterConfigurationTest {
     void filterBeansDisabledByProperty(final String beanName) {
         contextRunner.withPropertyValues("spring.config.location=classpath:empty.properties")
                 .withPropertyValues("server.response.trace.header.enabled=false", "server.request.logging.enabled=false")
+                .run(context -> assertThat(context).doesNotHaveBean(beanName));
+    }
+
+    @ValueSource(strings = "traceIdHeaderResponseFilter")
+    @ParameterizedTest
+    void filterBeansDisabledByTracingDisabled(final String beanName) {
+        contextRunner.withPropertyValues("spring.config.location=classpath:empty.properties")
+                .withPropertyValues("management.tracing.enabled=false")
                 .run(context -> assertThat(context).doesNotHaveBean(beanName));
     }
 
