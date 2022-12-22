@@ -98,7 +98,8 @@ class ApplicationIntegrationTest {
                         a -> assertThat(a.getId()).isNotNull(),
                         a -> assertThat(a.getLocale()).isNotNull(),
                         a -> assertThat(a.getContent()).isNotEmpty(),
-                        a -> assertThat(a.getCreated()).isBetween(ZonedDateTime.now().minusMinutes(5), ZonedDateTime.now())
+                        a -> assertThat(a.getCreated()).isBetween(ZonedDateTime.now().minusMinutes(5), ZonedDateTime.now()),
+                        a -> assertThat(a.getModified()).isBetween(ZonedDateTime.now().minusMinutes(5), ZonedDateTime.now())
                 ));
     }
 

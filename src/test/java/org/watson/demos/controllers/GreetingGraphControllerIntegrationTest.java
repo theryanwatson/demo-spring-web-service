@@ -52,12 +52,20 @@ import static org.watson.demos.utilities.GeneratorTestUtility.generateGreetings;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @GraphQlTest(GreetingGraphController.class)
 class GreetingGraphControllerIntegrationTest {
+    private static final String GREETING_FIELDS = """
+                id
+                content
+                locale
+                created
+                modified
+            """;
     private static final Map<UUID, Greeting> INPUT_VALUES = new LinkedHashMap<>();
     private static final Map<UUID, Greeting> EXPECTED_VALUES = generateGreetings("integrate").stream()
             .map(g -> Map.entry(UUID.randomUUID(), g))
             .peek(toBiConsumer(INPUT_VALUES::put))
             .map(e -> e.getValue().toBuilder().id(e.getKey()))
             .map(g -> g.created(ZonedDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.MILLIS)))
+            .map(g -> g.modified(ZonedDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.MILLIS)))
             .map(Greeting.GreetingBuilder::build)
             .collect(Collectors.toUnmodifiableMap(Greeting::getId, Function.identity()));
 
@@ -99,14 +107,12 @@ class GreetingGraphControllerIntegrationTest {
     @MethodSource
     @ParameterizedTest
     void createGreetings(final List<Greeting> expected) {
-        GraphQlTester.Request<?> document = tester.document("mutation CreateGreetings($greetings: [GreetingInput]!) {" +
-                "  createGreetings(greetings: $greetings) {" +
-                "    id" +
-                "    content" +
-                "    locale" +
-                "    created" +
-                "  }" +
-                "}");
+        final GraphQlTester.Request<?> document = tester.document("""
+                mutation CreateGreetings($greetings: [GreetingInput]!) {
+                    createGreetings(greetings: $greetings) {
+                        %s
+                    }
+                }""".formatted(GREETING_FIELDS));
 
         final GraphQlTester.Response response = expected.stream()
                 .map(e -> Map.of("content", e.getContent(), "locale", e.getLocale()))
@@ -136,14 +142,12 @@ class GreetingGraphControllerIntegrationTest {
     @MethodSource
     @ParameterizedTest
     void getGreetings(final Pageable pageable) {
-        final GraphQlTester.Request<?> document = tester.document("query GetGreetings($locale: String = null, $page: Int = 0, $size: Int = 20, $sort: [String!] = null) {" +
-                "  greetings(locale: $locale, page: $page, size: $size, sort: $sort) {" +
-                "    id" +
-                "    content" +
-                "    locale" +
-                "    created" +
-                "  }" +
-                "}");
+        final GraphQlTester.Request<?> document = tester.document("""
+                query GetGreetings($locale: String = null, $page: Int = 0, $size: Int = 20, $sort: [String!] = null) {
+                    greetings(locale: $locale, page: $page, size: $size, sort: $sort) {
+                        %s
+                    }
+                }""".formatted(GREETING_FIELDS));
 
         if (pageable.isPaged()) {
             document.variable("page", pageable.getPageNumber())
@@ -174,14 +178,10 @@ class GreetingGraphControllerIntegrationTest {
     @SneakyThrows
     @Test
     void getGreeting() {
-        final GraphQlTester.Request<?> document = tester.document("query GetGreeting($id: ID!) {" +
-                "  greeting(id: $id) {" +
-                "    id" +
-                "    content" +
-                "    locale" +
-                "    created" +
-                "  }" +
-                "}");
+        final GraphQlTester.Request<?> document = tester.document("""
+                query GetGreeting($id: ID!) {
+                    greeting(id: $id) { %s }
+                }""".formatted(GREETING_FIELDS));
 
         EXPECTED_VALUES.forEach((id, expectedEntry) -> {
             final GraphQlTester.Response response = document.variable("id", id).execute();
@@ -191,7 +191,8 @@ class GreetingGraphControllerIntegrationTest {
                     a -> assertThat(a.getId()).isEqualTo(expectedEntry.getId()),
                     a -> assertThat(a.getLocale()).isEqualTo(expectedEntry.getLocale()),
                     a -> assertThat(a.getContent()).isEqualTo(expectedEntry.getContent()),
-                    a -> assertThat(a.getCreated()).isEqualTo(expectedEntry.getCreated())
+                    a -> assertThat(a.getCreated()).isEqualTo(expectedEntry.getCreated()),
+                    a -> assertThat(a.getModified()).isEqualTo(expectedEntry.getModified())
             );
 
             verify(service).getOne(id);
@@ -202,9 +203,10 @@ class GreetingGraphControllerIntegrationTest {
     @MethodSource
     @ParameterizedTest
     void deleteGreeting(final Collection<UUID> ids) {
-        GraphQlTester.Request<?> document = tester.document("mutation DeleteGreetings($ids: [ID]!) {" +
-                "  deleteGreetings(ids: $ids)" +
-                "}");
+        final GraphQlTester.Request<?> document = tester.document("""
+                mutation DeleteGreetings($ids: [ID]!) {
+                    deleteGreetings(ids: $ids)
+                }""");
         document.variable("ids", ids).executeAndVerify();
 
         verify(service).deleteAll(Set.copyOf(ids));
@@ -228,6 +230,7 @@ class GreetingGraphControllerIntegrationTest {
                     a -> assertThat(a).isNotNull(),
                     a -> assertThat(a.getId()).isNotNull(),
                     a -> assertThat(a.getCreated()).isBetween(ZonedDateTime.now().minusMinutes(5), ZonedDateTime.now()),
+                    a -> assertThat(a.getModified()).isBetween(ZonedDateTime.now().minusMinutes(5), ZonedDateTime.now()),
                     a -> assertThat(a.getLocale()).isEqualTo(expectedEntry.getLocale()),
                     a -> assertThat(a.getContent()).isEqualTo(expectedEntry.getContent())
             );
