@@ -35,6 +35,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -232,12 +233,14 @@ class GreetingRestControllerIntegrationTest {
 
     @SneakyThrows
     private void assertActualMatchesExpected(final MvcResult result, final List<Greeting> expected) {
-        final List<Greeting> actual = objectMapper.readValue(result.getResponse().getContentAsString(), ListOfGreetings.class);
+        final List<Greeting> expectedSorted = expected.stream().sorted(Comparator.comparing(Greeting::getContent)).toList();
+        final List<Greeting> actual = objectMapper.readValue(result.getResponse().getContentAsString(), ListOfGreetings.class)
+                .stream().sorted(Comparator.comparing(Greeting::getContent)).toList();
 
         assertThat(actual).hasSize(expected.size());
 
         for (int i = 0; i < expected.size(); i++) {
-            final Greeting expectedEntry = expected.get(i);
+            final Greeting expectedEntry = expectedSorted.get(i);
 
             assertThat(actual.get(i)).satisfies(
                     a -> assertThat(a).isNotNull(),
