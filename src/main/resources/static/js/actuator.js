@@ -155,8 +155,8 @@ function entryToTitleCase([k, v]) {
     return [title.length < 3 || !title.match(/[aeiou ]/i) ? title.toUpperCase() : title, v];
 }
 
-function patch(input) {
-    fetch(input, {method: "PATCH"})
+function httpMethodFetch(input, method) {
+    fetch(input, {method: method})
         .then(function (response) {
             if (!response.ok) {
                 throw Error(response.statusText);
@@ -167,6 +167,14 @@ function patch(input) {
         })
         .then(new Promise(resolve => setTimeout(resolve, 500)))
         .catch(handleErrors)
+}
+
+function patch(input) {
+    httpMethodFetch(input, "PATCH")
+}
+
+function post(input) {
+    httpMethodFetch(input, "POST")
 }
 
 function fetchJson(input) {
