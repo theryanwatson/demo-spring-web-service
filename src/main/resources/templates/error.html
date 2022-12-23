@@ -26,11 +26,11 @@
 
     <p th:if="${status != 404 && param.message == null && param.trace == null && param.errors == null}"
        th:unless="${enableMessage == false && enableStacktrace == false && enableBindingErrors == false}"
-       th:with="currentUrl=(${path + '?' + #strings.defaultString(#httpServletRequest.queryString, '')})">
+       th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder)}">
         Re-submit request and display
-        <a th:href="@{${currentUrl}(message='')}" th:if="${enableMessage == true && message == null}">exception message</a>
-        <a th:href="@{${currentUrl}(errors='')}" th:if="${enableBindingErrors == true && errors == null}">binding errors</a>
-        <a th:href="@{${currentUrl}(trace='')}" th:if="${enableStacktrace == true}">stacktrace</a>
+        <a th:href="@{${urlBuilder.fromCurrentRequest().replacePath(path).queryParam('message', '').toUriString()}}" th:if="${enableMessage == true && message == null}">exception message</a>
+        <a th:href="@{${urlBuilder.fromCurrentRequest().replacePath(path).queryParam('errors', '').toUriString()}}" th:if="${enableBindingErrors == true && errors == null}">binding errors</a>
+        <a th:href="@{${urlBuilder.fromCurrentRequest().replacePath(path).queryParam('trace', '').toUriString()}}" th:if="${enableStacktrace == true}">stacktrace</a>
     </p>
 </div>
 
