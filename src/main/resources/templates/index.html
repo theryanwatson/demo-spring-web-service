@@ -49,6 +49,12 @@
             <button class="status out" th:onclick="'javascript:patch(\'/v1/availability/health/OUT_OF_SERVICE\');refreshHealth();'">OUT_OF_SERVICE</button>
             <button class="status" th:onclick="'javascript:patch(\'/v1/availability/health/UNKNOWN\');refreshHealth();'">UNKNOWN</button>
         </li>
+        <li th:if="${@environment.getProperty('management.endpoint.shutdown.enabled', '').matches('true') &&
+                     @environment.getProperty('management.endpoints.web.exposure.include', '').matches('.*([*]|shutdown).*')}">
+            <span>Shutdown</span>
+            <button class="status" th:onclick="'javascript:document.getElementById(\'shutdown-button\').disabled = false;'">ENABLE <strong style="vertical-align: center">&#x21E8;</strong></button>
+            <button disabled="disabled" id="shutdown-button" class="status down" th:onclick="'javascript:post(\'/actuator/shutdown\');'">SHUTDOWN</button>
+        </li>
     </ul>
 </details>
 
