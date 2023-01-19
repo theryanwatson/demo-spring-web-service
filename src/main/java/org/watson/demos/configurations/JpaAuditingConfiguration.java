@@ -1,4 +1,4 @@
-package org.watson.demos.configuration;
+package org.watson.demos.configurations;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;

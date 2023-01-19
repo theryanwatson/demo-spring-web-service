@@ -1,4 +1,4 @@
-package org.watson.demos.configuration;
+package org.watson.demos.configurations;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletResponse;

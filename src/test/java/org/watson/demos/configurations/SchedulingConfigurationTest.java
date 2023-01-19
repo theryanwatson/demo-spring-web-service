@@ -1,4 +1,4 @@
-package org.watson.demos.configuration;
+package org.watson.demos.configurations;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -6,23 +6,23 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class AsyncConfigurationTest {
+class SchedulingConfigurationTest {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-            .withUserConfiguration(AsyncConfiguration.class);
+            .withUserConfiguration(SchedulingConfiguration.class);
 
-    @ValueSource(strings = "asyncConfiguration")
+    @ValueSource(strings = "schedulingConfiguration")
     @ParameterizedTest
     void enabledByDefault(final String beanName) {
         contextRunner
                 .run(context -> assertThat(context).hasBean(beanName));
     }
 
-    @ValueSource(strings = "asyncConfiguration")
+    @ValueSource(strings = "schedulingConfiguration")
     @ParameterizedTest
     void disabledByProperty(final String beanName) {
         contextRunner.withPropertyValues("spring.config.location=classpath:empty.properties")
-                .withPropertyValues("spring.task.async.enabled=false")
+                .withPropertyValues("spring.task.scheduling.enabled=false")
                 .run(context -> assertThat(context).doesNotHaveBean(beanName));
     }
 }
