@@ -1,4 +1,4 @@
-package org.watson.demos.configuration;
+package org.watson.demos.configurations;
 
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
@@ -41,21 +41,21 @@ import java.util.stream.IntStream;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.watson.demos.configuration.SpringDocConfiguration.SPRING_DOC_PREFIX_CONTACT;
-import static org.watson.demos.configuration.SpringDocConfiguration.SPRING_DOC_PREFIX_EXTERNAL_DOCUMENTATION;
-import static org.watson.demos.configuration.SpringDocConfiguration.SPRING_DOC_PREFIX_INFO;
-import static org.watson.demos.configuration.SpringDocConfiguration.SPRING_DOC_PREFIX_LICENSE;
-import static org.watson.demos.configuration.SpringDocConfigurationTest.BuildPropertiesTestConfiguration;
-import static org.watson.demos.configuration.SpringDocConfigurationTest.CONTACT_EMAIL;
-import static org.watson.demos.configuration.SpringDocConfigurationTest.CONTACT_NAME;
-import static org.watson.demos.configuration.SpringDocConfigurationTest.CONTACT_URL;
-import static org.watson.demos.configuration.SpringDocConfigurationTest.ERROR_SCHEMA_NAME;
-import static org.watson.demos.configuration.SpringDocConfigurationTest.EXTERNAL_DOC_DESC;
-import static org.watson.demos.configuration.SpringDocConfigurationTest.EXTERNAL_DOC_URL;
-import static org.watson.demos.configuration.SpringDocConfigurationTest.LICENSE_NAME;
-import static org.watson.demos.configuration.SpringDocConfigurationTest.LICENSE_URL;
-import static org.watson.demos.configuration.SpringDocConfigurationTest.SHARED_ERRORS_STRING;
-import static org.watson.demos.configuration.SpringDocConfigurationTest.TERM_OF_SERVICE;
+import static org.watson.demos.configurations.SpringDocConfiguration.SPRING_DOC_PREFIX_CONTACT;
+import static org.watson.demos.configurations.SpringDocConfiguration.SPRING_DOC_PREFIX_EXTERNAL_DOCUMENTATION;
+import static org.watson.demos.configurations.SpringDocConfiguration.SPRING_DOC_PREFIX_INFO;
+import static org.watson.demos.configurations.SpringDocConfiguration.SPRING_DOC_PREFIX_LICENSE;
+import static org.watson.demos.configurations.SpringDocConfigurationTest.BuildPropertiesTestConfiguration;
+import static org.watson.demos.configurations.SpringDocConfigurationTest.CONTACT_EMAIL;
+import static org.watson.demos.configurations.SpringDocConfigurationTest.CONTACT_NAME;
+import static org.watson.demos.configurations.SpringDocConfigurationTest.CONTACT_URL;
+import static org.watson.demos.configurations.SpringDocConfigurationTest.ERROR_SCHEMA_NAME;
+import static org.watson.demos.configurations.SpringDocConfigurationTest.EXTERNAL_DOC_DESC;
+import static org.watson.demos.configurations.SpringDocConfigurationTest.EXTERNAL_DOC_URL;
+import static org.watson.demos.configurations.SpringDocConfigurationTest.LICENSE_NAME;
+import static org.watson.demos.configurations.SpringDocConfigurationTest.LICENSE_URL;
+import static org.watson.demos.configurations.SpringDocConfigurationTest.SHARED_ERRORS_STRING;
+import static org.watson.demos.configurations.SpringDocConfigurationTest.TERM_OF_SERVICE;
 
 @SpringBootTest(classes = SpringDocConfiguration.class, properties = {
         SPRING_DOC_PREFIX_CONTACT + ".email=" + CONTACT_EMAIL,

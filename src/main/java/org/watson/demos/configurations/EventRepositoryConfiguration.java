@@ -1,4 +1,4 @@
-package org.watson.demos.configuration;
+package org.watson.demos.configurations;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.audit.AuditEventRepository;

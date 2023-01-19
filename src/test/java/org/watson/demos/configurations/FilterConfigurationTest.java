@@ -1,4 +1,4 @@
-package org.watson.demos.configuration;
+package org.watson.demos.configurations;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

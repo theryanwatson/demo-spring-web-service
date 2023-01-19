@@ -29,68 +29,68 @@
       "name": "springdoc.error.schema-name",
       "type": "java.lang.String",
       "description": "Name to be used for the Error schema.",
-      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration",
+      "sourceType": "org.watson.demos.configurations.SpringDocConfiguration",
       "defaultValue": "Error"
     },
     {
       "name": "springdoc.info.contact.email",
       "type": "java.lang.String",
       "description": "OpenAPI documentation Contact Email address.",
-      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+      "sourceType": "org.watson.demos.configurations.SpringDocConfiguration"
     },
     {
       "name": "springdoc.info.contact.name",
       "type": "java.lang.String",
       "description": "OpenAPI documentation Contact Name text.",
-      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+      "sourceType": "org.watson.demos.configurations.SpringDocConfiguration"
     },
     {
       "name": "springdoc.info.contact.url",
       "type": "java.lang.String",
       "description": "OpenAPI documentation Contact URL.",
-      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+      "sourceType": "org.watson.demos.configurations.SpringDocConfiguration"
     },
     {
       "name": "springdoc.info.external-documentation.description",
       "type": "java.lang.String",
       "description": "OpenAPI documentation External Documentation Description.",
-      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+      "sourceType": "org.watson.demos.configurations.SpringDocConfiguration"
     },
     {
       "name": "springdoc.info.external-documentation.url",
       "type": "java.lang.String",
       "description": "OpenAPI documentation External Documentation URL.",
-      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+      "sourceType": "org.watson.demos.configurations.SpringDocConfiguration"
     },
     {
       "name": "springdoc.info.license.name",
       "type": "java.lang.String",
       "description": "OpenAPI documentation License Name.",
-      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+      "sourceType": "org.watson.demos.configurations.SpringDocConfiguration"
     },
     {
       "name": "springdoc.info.license.url",
       "type": "java.lang.String",
       "description": "OpenAPI documentation License URL.",
-      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+      "sourceType": "org.watson.demos.configurations.SpringDocConfiguration"
     },
     {
       "name": "springdoc.info.terms-of-service",
       "type": "java.lang.String",
       "description": "OpenAPI documentation Terms-of-Service text.",
-      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+      "sourceType": "org.watson.demos.configurations.SpringDocConfiguration"
     },
     {
       "name": "springdoc.shared-errors",
       "type": "java.lang.String",
       "description": "HttpStatus error codes for all documented paths.",
-      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+      "sourceType": "org.watson.demos.configurations.SpringDocConfiguration"
     },
     {
       "name": "springdoc.use-array-schema",
       "type": "java.lang.String",
       "description": "Comma-delimited-list of Full-class-path of classes to document as an array.",
-      "sourceType": "org.watson.demos.configuration.SpringDocConfiguration"
+      "sourceType": "org.watson.demos.configurations.SpringDocConfiguration"
     }
   ]
 }

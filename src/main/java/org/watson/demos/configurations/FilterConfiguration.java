@@ -1,4 +1,4 @@
-package org.watson.demos.configuration;
+package org.watson.demos.configurations;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
