@@ -67,7 +67,7 @@ import static org.watson.demos.configurations.SpringDocConfigurationTest.TERM_OF
         SPRING_DOC_PREFIX_INFO + ".terms-of-service=" + TERM_OF_SERVICE,
         "springdoc.shared-errors=" + SHARED_ERRORS_STRING,
         "springdoc.error.schema-name=" + ERROR_SCHEMA_NAME,
-        "springdoc.use-array-schema=org.watson.demos.configuration.SpringDocConfigurationTest.TestArrayType",
+        "springdoc.use-array-schema=org.watson.demos.configurations.SpringDocConfigurationTest.TestArrayType",
 })
 @EnableConfigurationProperties
 @ContextConfiguration(classes = {BuildPropertiesTestConfiguration.class, SpringDocConfiguration.class})
