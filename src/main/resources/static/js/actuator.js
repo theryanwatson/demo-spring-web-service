@@ -4,7 +4,7 @@ function refreshHealth() {
             return Object.entries(data["components"])
                 .filter(([_, v]) => v.hasOwnProperty("status"))
                 .map(([k, v]) => [k, v["status"]])
-                .map(([k, v]) => [k, `<a href="actuator/health/${k}">${v}</a>`])
+                .map(([k, v]) => [k, `<a target="_blank" href="actuator/health/${k}">${v}</a>`])
                 .map(entryToTitleCase);
         })
         .then(entriesToList)
@@ -108,7 +108,7 @@ function entriesToNestedList(data) {
 }
 
 function entriesToHrefList(entries) {
-    return entriesToList(entries, ([k, v]) => `<a href="${v}">${k}</a>`);
+    return entriesToList(entries, ([k, v]) => `<a target="_blank" href="${v}">${k}</a>`);
 }
 
 function entriesToList(entries, keyValueMapper = ([k, v]) => `${k}: ${v}`) {
