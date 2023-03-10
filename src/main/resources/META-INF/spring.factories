@@ -1,0 +1,1 @@
+org.springframework.boot.env.PropertySourceLoader=org.watson.demos.properties.loaders.JsonPropertySourceLoader
