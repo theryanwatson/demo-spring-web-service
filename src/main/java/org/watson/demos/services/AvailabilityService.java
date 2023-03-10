@@ -1,5 +1,6 @@
 package org.watson.demos.services;
 
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
@@ -16,6 +17,7 @@ import org.watson.demos.models.HealthStatus;
 import java.util.HashMap;
 import java.util.Map;
 
+@Timed("service.availability")
 @Slf4j
 @RequiredArgsConstructor
 @Service

@@ -1,5 +1,6 @@
 package org.watson.demos.healthindicators;
 
+import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -13,6 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Component
+@Timed("health.indicator.health.listener")
 public class HealthListenerHealthIndicator implements HealthIndicator {
     private final AtomicReference<Health> health = new AtomicReference<>(Health.up().build());
 

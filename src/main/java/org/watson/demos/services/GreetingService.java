@@ -1,5 +1,6 @@
 package org.watson.demos.services;
 
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Timed("service.greeting")
 @Service
 @RequiredArgsConstructor
 public class GreetingService {
