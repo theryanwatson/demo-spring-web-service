@@ -1,0 +1,8 @@
+{
+  "this": {
+    "json": {
+      "value": "someJsonValue"
+    }
+  },
+  "that.json.value": "anotherJsonValue"
+}
