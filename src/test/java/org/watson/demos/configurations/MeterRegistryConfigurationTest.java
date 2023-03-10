@@ -16,7 +16,7 @@ class MeterRegistryConfigurationTest {
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withUserConfiguration(MeterRegistryConfiguration.class);
 
-    @ValueSource(strings = "meterRegistryConfiguration")
+    @ValueSource(strings = {"meterRegistryConfiguration", "countedAspect", "timedAspect"})
     @ParameterizedTest
     void enabledByDefault(final String beanName) {
         contextRunner
@@ -24,10 +24,11 @@ class MeterRegistryConfigurationTest {
                 .run(context -> assertThat(context).hasBean(beanName));
     }
 
-    @ValueSource(strings = "meterRegistryConfiguration")
+    @ValueSource(strings = {"countedAspect", "timedAspect"})
     @ParameterizedTest
-    void disabledByMissingDependencyBean(final String beanName) {
-        contextRunner
+    void aspect_disabledByProperty(final String beanName) {
+        contextRunner.withPropertyValues("spring.config.location=classpath:empty.properties")
+                .withPropertyValues("spring.meter.aspect.enabled=false")
                 .run(context -> assertThat(context).doesNotHaveBean(beanName));
     }
 
