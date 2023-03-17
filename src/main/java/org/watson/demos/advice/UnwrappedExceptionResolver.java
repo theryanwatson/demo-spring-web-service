@@ -42,8 +42,8 @@ public class UnwrappedExceptionResolver extends DefaultHandlerExceptionResolver 
 
     public UnwrappedExceptionResolver(@Value("${server.error.unwrapped-exceptions}") final Optional<Set<Class<? extends Throwable>>> unwrappedExceptions,
                                       @Value("#{${server.error.exception-codes}}") final Optional<Map<Class<? extends Throwable>, Integer>> exceptionErrorCodes) {
-        this.unwrappedExceptions = unwrappedExceptions.orElse(Set.of());
-        this.exceptionErrorCodes = exceptionErrorCodes.orElse(Map.of());
+        this.unwrappedExceptions = unwrappedExceptions.orElseGet(Set::of);
+        this.exceptionErrorCodes = exceptionErrorCodes.orElseGet(Map::of);
         setOrder(Ordered.LOWEST_PRECEDENCE);
         setWarnLogCategory(getClass().getName());
     }
