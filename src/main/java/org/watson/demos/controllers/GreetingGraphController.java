@@ -84,7 +84,7 @@ public class GreetingGraphController {
                     sort.stream()
                             .map(PageWrapper::toSort)
                             .reduce(Sort::and)
-                            .orElse(Sort.unsorted());
+                            .orElseGet(Sort::unsorted);
         }
 
         private static Sort toSort(@NonNull String sort) {
