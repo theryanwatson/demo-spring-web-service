@@ -127,6 +127,36 @@ class GreetingGraphControllerIntegrationTest {
         verify(service).createAll(Set.copyOf(expected));
     }
 
+    @SneakyThrows
+    @MethodSource("createGreetings")
+    @ParameterizedTest
+    void createGreeting(final List<Greeting> expectedList) {
+        for (Greeting expected : expectedList) {
+            GraphQlTester.Request<?> document = tester.document("mutation CreateGreeting($greeting: GreetingInput!) {" +
+                    "  createGreeting(greeting: $greeting) {" +
+                    "    id" +
+                    "    content" +
+                    "    locale" +
+                    "    created" +
+                    "    modified" +
+                    "  }" +
+                    "}");
+
+            final GraphQlTester.Response response = document
+                    .variable("greeting", Map.of("content", expected.getContent(), "locale", expected.getLocale()))
+                    .execute();
+
+            final Greeting actual = response
+                    .path("createGreeting")
+                    .entity(Greeting.class)
+                    .get();
+
+            assertActualMatchesExpected(actual, expected);
+
+            verify(service).createAll(List.of(expected));
+        }
+    }
+
     Stream<Arguments> createGreetings() {
         return Stream.of(
                 Arguments.of(Named.of("Greeting[1]", subList(INPUT_VALUES.values(), 0, 1))),
@@ -222,22 +252,24 @@ class GreetingGraphControllerIntegrationTest {
         );
     }
 
-    @SneakyThrows
     private void assertActualMatchesExpected(final List<Greeting> actual, final List<Greeting> expected) {
         assertThat(actual).hasSize(expected.size());
 
         for (int i = 0; i < expected.size(); i++) {
-            final Greeting expectedEntry = expected.get(i);
-
-            assertThat(actual.get(i)).satisfies(
-                    a -> assertThat(a).isNotNull(),
-                    a -> assertThat(a.getId()).isNotNull(),
-                    a -> assertThat(a.getCreated()).isBetween(ZonedDateTime.now().minusMinutes(5), ZonedDateTime.now()),
-                    a -> assertThat(a.getModified()).isBetween(ZonedDateTime.now().minusMinutes(5), ZonedDateTime.now()),
-                    a -> assertThat(a.getLocale()).isEqualTo(expectedEntry.getLocale()),
-                    a -> assertThat(a.getContent()).isEqualTo(expectedEntry.getContent())
-            );
+            assertActualMatchesExpected(actual.get(i), expected.get(i));
         }
+    }
+
+    private void assertActualMatchesExpected(final Greeting actual, final Greeting expected) {
+        assertThat(actual)
+                .isNotNull()
+                .satisfies(
+                        a -> assertThat(a.getId()).isNotNull(),
+                        a -> assertThat(a.getCreated()).isBetween(ZonedDateTime.now().minusMinutes(5), ZonedDateTime.now()),
+                        a -> assertThat(a.getModified()).isBetween(ZonedDateTime.now().minusMinutes(5), ZonedDateTime.now()),
+                        a -> assertThat(a.getLocale()).isEqualTo(expected.getLocale()),
+                        a -> assertThat(a.getContent()).isEqualTo(expected.getContent())
+                );
     }
 
     private static class ListOfGreetings extends ArrayList<Greeting> {}
