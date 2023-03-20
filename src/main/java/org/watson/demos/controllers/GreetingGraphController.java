@@ -2,6 +2,7 @@ package org.watson.demos.controllers;
 
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.sleuth.annotation.NewSpan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +40,7 @@ public class GreetingGraphController {
                 .orElseThrow();
     }
 
+    @NewSpan
     @QueryMapping(name = "greetings")
     public Page<Greeting> getGreetings(@Valid @Arguments final GreetingProbe probe, @Valid @Arguments final PageWrapper pageable) {
         return service.getAll(probe, pageable.toPageable());

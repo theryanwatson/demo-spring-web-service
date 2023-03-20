@@ -3,6 +3,7 @@ package org.watson.demos.controllers;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
+import org.springframework.cloud.sleuth.annotation.NewSpan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,7 @@ public class GreetingRestController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("greeting '%s' Not Found", id)));
     }
 
+    @NewSpan
     @GetMapping
     public Page<Greeting> getGreetings(@Valid final GreetingProbe probe, @ParameterObject final Pageable pageable) {
         return service.getAll(probe, pageable);

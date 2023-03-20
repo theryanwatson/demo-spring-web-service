@@ -23,7 +23,7 @@ public class ScheduledChainedHealthIndicator implements HealthIndicator {
         return health.get();
     }
 
-    @Scheduled(fixedRateString = "${scheduled.task.health.listener.fixed.rate:PT5S}")
+    @Scheduled(fixedRateString = "${scheduled.task.health.listener.fixed.rate:PT5M}")
     public void onEvent() {
         final Health updated = healthIndicator.health();
         final Health current = health.getAndSet(updated);

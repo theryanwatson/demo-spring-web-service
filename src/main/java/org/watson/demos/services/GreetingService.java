@@ -2,6 +2,8 @@ package org.watson.demos.services;
 
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.sleuth.annotation.ContinueSpan;
+import org.springframework.cloud.sleuth.annotation.SpanTag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
@@ -27,7 +29,8 @@ public class GreetingService {
         return repository.findById(id);
     }
 
-    public Page<Greeting> getAll(@NonNull final GreetingProbe probe, @NonNull final Pageable pageable) {
+    @ContinueSpan
+    public Page<Greeting> getAll(@SpanTag(key = "locale", expression = "locale") @NonNull final GreetingProbe probe, @NonNull final Pageable pageable) {
         if (probe.getLocale() != null) {
             return repository.findAllByLocale(probe.getLocale(), pageable);
         } else {
