@@ -136,12 +136,12 @@ class GreetingGraphControllerIntegrationTest {
     @ParameterizedTest
     void createGreeting(final List<Greeting> expectedList) {
         for (Greeting expected : expectedList) {
-            GraphQlTester.Request<?> document = tester.document("""
-                mutation CreateGreeting($greeting: GreetingInput!) {
-                    createGreeting(greeting: $greeting) {
-                        %s
-                    }
-                }""".formatted(GREETING_FIELDS));
+            final GraphQlTester.Request<?> document = tester.document("""
+                    mutation CreateGreeting($greeting: GreetingInput!) {
+                        createGreeting(greeting: $greeting) {
+                            %s
+                        }
+                    }""".formatted(GREETING_FIELDS));
 
             final GraphQlTester.Response response = document
                     .variable("greeting", Map.of("content", expected.getContent(), "locale", expected.getLocale()))
