@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.9</version>
+        <version>2.7.10</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.watson</groupId>
@@ -16,8 +16,8 @@
 
     <properties>
         <java.version>11</java.version>
-        <snakeyaml.version>1.33</snakeyaml.version>
-        <springdoc.version>1.6.15</springdoc.version>
+        <snakeyaml.version>2.0</snakeyaml.version>
+        <springdoc.version>1.7.0</springdoc.version>
         <spring-cloud.version>2021.0.6</spring-cloud.version>
     </properties>
 
