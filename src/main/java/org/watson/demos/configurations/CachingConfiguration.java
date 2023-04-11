@@ -2,6 +2,7 @@ package org.watson.demos.configurations;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.CacheOperationInvocationContext;
@@ -22,6 +23,11 @@ import java.util.stream.Collectors;
 @EnableCaching(proxyTargetClass = true)
 @Configuration(proxyBeanMethods = false)
 public class CachingConfiguration {
+
+    @Bean
+    public Cache serviceTimeResponses(final CacheManager cacheManager) {
+        return cacheManager.getCache("service.time.direct.responses");
+    }
 
     /**
      * {@link CacheResolver} that allows {@link org.springframework.cache.annotation.Cacheable} and related caching

@@ -7,14 +7,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.watson.demos.models.CacheMode;
-import org.watson.demos.services.TimeService;
+import org.watson.demos.models.CacheStyle;
+import org.watson.demos.services.TimeServiceAnnotation;
 import reactor.core.publisher.Flux;
 
 import javax.annotation.Resource;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = CachedTimeController.class, properties = {
         "cached.time.controller.default.mode=none"
@@ -22,7 +26,7 @@ import static org.mockito.Mockito.*;
 class CachedTimeControllerTest {
 
     @MockBean
-    private TimeService service;
+    private TimeServiceAnnotation service;
     @Value("${cached.time.controller.default.mode}")
     private CacheMode defaultMode;
     @Resource
@@ -36,10 +40,10 @@ class CachedTimeControllerTest {
         final Optional<String> input = Optional.of("some/input");
         final Optional<CacheMode> selectedMode = Optional.ofNullable(mode);
 
-        when(service.route(any())).thenReturn(TimeService::get);
+        when(service.route(any())).thenReturn(TimeServiceAnnotation::get);
         when(service.get(any())).thenReturn(expected);
 
-        final Flux<Object> actual = controller.get(input, selectedMode);
+        final Flux<Object> actual = controller.get(input, selectedMode, Optional.of(CacheStyle.annotation));
 
         assertThat(actual).isEqualTo(expected);
 

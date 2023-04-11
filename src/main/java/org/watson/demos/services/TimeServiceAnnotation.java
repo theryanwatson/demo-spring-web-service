@@ -17,19 +17,19 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-@Timed(TimeService.SERVICE_NAME)
+@Timed(TimeServiceAnnotation.SERVICE_NAME)
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class TimeService {
-    static final String SERVICE_NAME = "service.time";
+public class TimeServiceAnnotation {
+    static final String SERVICE_NAME = "service.time.annotation";
     private static final String CACHE_NAME = SERVICE_NAME + ".responses";
 
-    private static final Map<CacheMode, BiFunction<TimeService, Optional<String>, Flux<Object>>> routes = Map.of(
-            CacheMode.cache, TimeService::getCacheable,
-            CacheMode.evict, TimeService::getCacheEvict,
-            CacheMode.none, TimeService::get,
-            CacheMode.put, TimeService::getCachePut
+    private static final Map<CacheMode, BiFunction<TimeServiceAnnotation, Optional<String>, Flux<Object>>> routes = Map.of(
+            CacheMode.cache, TimeServiceAnnotation::getCacheable,
+            CacheMode.evict, TimeServiceAnnotation::getCacheEvict,
+            CacheMode.none, TimeServiceAnnotation::get,
+            CacheMode.put, TimeServiceAnnotation::getCachePut
     );
 
     private final WebClient worldtimeClient;
@@ -40,7 +40,7 @@ public class TimeService {
      * @param mode The {@link CacheMode} linked to a function
      * @return Null or selected function
      */
-    public BiFunction<TimeService, Optional<String>, Flux<Object>> route(final CacheMode mode) {
+    public BiFunction<TimeServiceAnnotation, Optional<String>, Flux<Object>> route(final CacheMode mode) {
         return routes.get(mode);
     }
 
