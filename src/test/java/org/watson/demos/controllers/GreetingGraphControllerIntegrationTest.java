@@ -115,7 +115,7 @@ class GreetingGraphControllerIntegrationTest {
                 }""".formatted(GREETING_FIELDS));
 
         final GraphQlTester.Response response = expected.stream()
-                .map(e -> Map.of("content", e.getContent(), "locale", e.getLocale()))
+                .map(e -> Map.of("content", e.getContent(), "locale", e.getLocale().toString()))
                 .collect(Collectors.collectingAndThen(Collectors.toList(), l -> document.variable("greetings", l)))
                 .execute();
 
@@ -144,7 +144,7 @@ class GreetingGraphControllerIntegrationTest {
                     }""".formatted(GREETING_FIELDS));
 
             final GraphQlTester.Response response = document
-                    .variable("greeting", Map.of("content", expected.getContent(), "locale", expected.getLocale()))
+                    .variable("greeting", Map.of("content", expected.getContent(), "locale", expected.getLocale().toString()))
                     .execute();
 
             final Greeting actual = response
