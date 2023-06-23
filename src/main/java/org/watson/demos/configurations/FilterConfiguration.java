@@ -1,6 +1,7 @@
 package org.watson.demos.configurations;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -13,6 +14,7 @@ import org.watson.demos.services.TraceService;
 
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.Optional;
 
 @Slf4j
@@ -22,16 +24,19 @@ class FilterConfiguration {
 
     @Bean
     @ConditionalOnProperty(value = "server.request.logging.enabled", matchIfMissing = true)
-    FilterRegistrationBean<RequestLoggingFilter> requestLoggingRegistrationBean(@Value("${server.request.logging.path.root:${spring.data.rest.base-path:#{null}}}") final Optional<String> rootPath,
-                                                                                @Value("${server.request.logging.order:#{null}}") final Optional<Integer> order) {
+    FilterRegistrationBean<RequestLoggingFilter> requestLoggingRegistrationBean(@Value("${server.request.logging.order:#{null}}") final Optional<Integer> order,
+                                                                                @Value("${server.request.logging.path.root:#{'${spring.graphql.path:/graphql},${spring.data.rest.base-path:/}'.split(',')}}") final Collection<String> rootPaths
+    ) {
         final RequestLoggingFilter filter = new RequestLoggingFilter();
-        final String urlPattern = rootPath
+        final String[] urlPatterns = rootPaths.stream()
+                .filter(StringUtils::isNotEmpty)
                 .map(String::trim)
                 .map(p -> p.startsWith("/") ? p : "/" + p)
                 .map(p -> p.endsWith("/") ? p : p + "/")
-                .orElse("/");
+                .map(p -> p + "*")
+                .toArray(String[]::new);
         return new FilterRegistrationBean<>(filter) {{
-            addUrlPatterns(urlPattern + "*");
+            addUrlPatterns(urlPatterns);
             setOrder(order.orElse(Ordered.HIGHEST_PRECEDENCE + 2));
         }};
     }
