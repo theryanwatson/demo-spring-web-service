@@ -1,6 +1,7 @@
 package org.watson.demos.configurations;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -8,6 +9,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.CacheOperationInvocationContext;
 import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.interceptor.SimpleCacheResolver;
+import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.PropertyResolver;
@@ -19,10 +21,32 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
-@ConditionalOnProperty(value = "spring.cache.enabled", matchIfMissing = true)
-@EnableCaching(proxyTargetClass = true)
 @Configuration(proxyBeanMethods = false)
 public class CachingConfiguration {
+    private static final String ENABLED_PLACEHOLDER = "spring.cache.enabled";
+
+    @ConditionalOnProperty(value = ENABLED_PLACEHOLDER, havingValue = "true", matchIfMissing = true)
+    @EnableCaching(proxyTargetClass = true)
+    @Configuration(proxyBeanMethods = false)
+    public static class CachingEnabledConfiguration {
+        public CachingEnabledConfiguration() {
+            log.info("Caching enabled.");
+        }
+    }
+
+    @ConditionalOnProperty(value = ENABLED_PLACEHOLDER, havingValue = "false")
+    @Configuration(proxyBeanMethods = false)
+    public static class CachingDisabledConfiguration {
+        public CachingDisabledConfiguration() {
+            log.info("Caching disabled.");
+        }
+
+        @ConditionalOnMissingBean
+        @Bean
+        protected CacheManager cacheManager() {
+            return new NoOpCacheManager();
+        }
+    }
 
     @Bean
     public Cache serviceTimeResponses(final CacheManager cacheManager) {
