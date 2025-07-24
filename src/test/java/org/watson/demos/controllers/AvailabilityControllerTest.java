@@ -7,8 +7,8 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.availability.LivenessState;
 import org.springframework.boot.availability.ReadinessState;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.watson.demos.models.HealthStatus;
 import org.watson.demos.services.AvailabilityService;
 
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verify;
 @SpringBootTest(classes = AvailabilityController.class)
 @Import(SimpleMeterRegistry.class)
 class AvailabilityControllerTest {
-    @MockBean
+    @MockitoBean
     private AvailabilityService service;
 
     @Resource

@@ -7,7 +7,7 @@ import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
@@ -20,7 +20,7 @@ class TraceServiceTest {
     private Span span;
     @Mock
     private TraceContext traceContext;
-    @MockBean
+    @MockitoBean
     private Tracer tracer;
     @Resource
     private TraceService service;

@@ -6,9 +6,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.watson.demos.models.Greeting;
 import org.watson.demos.models.GreetingProbe;
 import org.watson.demos.repositories.GreetingRepository;
@@ -31,7 +31,7 @@ import static org.watson.demos.utilities.GeneratorTestUtility.generateGreetings;
 class GreetingServiceTest {
     private static final List<Greeting> TEST_CONTENT = generateGreetings("service-content");
 
-    @MockBean
+    @MockitoBean
     private GreetingRepository repository;
 
     @Resource

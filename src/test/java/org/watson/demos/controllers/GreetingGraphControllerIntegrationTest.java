@@ -13,12 +13,12 @@ import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.graphql.test.tester.GraphQlTester;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.watson.demos.models.Greeting;
 import org.watson.demos.models.GreetingProbe;
 import org.watson.demos.services.GreetingService;
@@ -74,7 +74,7 @@ class GreetingGraphControllerIntegrationTest {
     @Value("${spring.data.web.pageable.max-page-size:2000}")
     private int maxPageSize;
 
-    @MockBean
+    @MockitoBean
     private GreetingService service;
     @Resource
     private GraphQlTester tester;

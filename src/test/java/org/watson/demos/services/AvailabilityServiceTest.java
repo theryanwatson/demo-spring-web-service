@@ -15,13 +15,13 @@ import org.springframework.boot.availability.LivenessState;
 import org.springframework.boot.availability.ReadinessState;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.watson.demos.events.HealthEvent;
 import org.watson.demos.models.HealthStatus;
 
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.verify;
 @ContextConfiguration(classes = AvailabilityServiceTest.PublisherTestConfiguration.class)
 class AvailabilityServiceTest {
 
-    @SpyBean
+    @MockitoSpyBean
     private ApplicationEventPublisher publisher;
     @Captor
     private ArgumentCaptor<ApplicationEvent> eventCaptor;

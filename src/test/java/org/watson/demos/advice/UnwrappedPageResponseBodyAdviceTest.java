@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.watson.demos.converters.UnwrappedPageHttpMessageConverter;
 
 import java.net.URI;
@@ -61,10 +61,10 @@ class UnwrappedPageResponseBodyAdviceTest {
     private SpringDataWebProperties webProperties;
     @Mock
     private SpringDataWebProperties.Pageable pageable;
-    @MockBean
+    @MockitoBean
     private UnwrappedPageHttpMessageConverter converter;
 
-    @SpyBean
+    @SpyBean // @SpyBean doesn't yet work with @ConditionalOnBean
     private UnwrappedPageResponseBodyAdvice advice;
 
     @BeforeEach

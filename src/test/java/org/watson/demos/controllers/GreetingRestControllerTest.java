@@ -4,10 +4,10 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.server.ResponseStatusException;
 import org.watson.demos.models.Greeting;
 import org.watson.demos.models.GreetingProbe;
@@ -33,7 +33,7 @@ import static org.watson.demos.utilities.GeneratorTestUtility.generateGreetings;
 class GreetingRestControllerTest {
     private static final List<Greeting> TEST_CONTENT = generateGreetings("controller-content");
 
-    @MockBean
+    @MockitoBean
     private GreetingService service;
 
     @Resource
