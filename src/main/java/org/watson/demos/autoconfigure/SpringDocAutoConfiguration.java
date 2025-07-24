@@ -1,4 +1,4 @@
-package org.watson.demos.configurations;
+package org.watson.demos.autoconfigure;
 
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
@@ -24,6 +24,7 @@ import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -31,7 +32,6 @@ import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeAttribu
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 
 import java.util.Collection;
@@ -52,7 +52,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  *
  * <li>The optional configuration properties change/fix the behavior of the library:</li><ul>
  * <li>{@code springdoc.shared-errors=} {@link #sharedErrorsCustomizer(Schema, Set)}</li>
- * <li>{@code springdoc.simple-types=} {@link SpringDocConfiguration#SpringDocConfiguration(Set)}</li>
+ * <li>{@code springdoc.simple-types=} {@link #simpleTypesCustomizer(Set)}</li>
  * <li>{@code springdoc.use-array-schema=} {@link #arraySchemaModelConverter(Set)}</li>
  * </ul>
  *
@@ -67,28 +67,13 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  * <li>{@code springdoc.info.terms-of-service=}</li>
  * </ul>
  */
+@AutoConfiguration
 @ConditionalOnWebApplication
-@Configuration(proxyBeanMethods = false)
-public class SpringDocConfiguration {
+public class SpringDocAutoConfiguration {
     static final String SPRING_DOC_PREFIX_INFO = "springdoc.info";
     static final String SPRING_DOC_PREFIX_EXTERNAL_DOCUMENTATION = SPRING_DOC_PREFIX_INFO + ".external-documentation";
     static final String SPRING_DOC_PREFIX_CONTACT = SPRING_DOC_PREFIX_INFO + ".contact";
     static final String SPRING_DOC_PREFIX_LICENSE = SPRING_DOC_PREFIX_INFO + ".license";
-
-    /**
-     * This constructor contains a 3PL-sadness workaround. If certain types (like {@link java.util.Locale}) are in
-     * documented classes, this SpringDoc library error out with a {@code java.lang.StackOverflowError: null}. 3PL
-     * documentation does not show a way to configure a way out of this error. Only statically accessing the lists
-     * of ignored types can work around the failure.
-     * <li>[Optional] {@code springdoc.simple-types=java.util.Locale,java.time.ZoneId}</li>
-     *
-     * @param simpleTypes List of full-class-path to the classes to be added as "simple types"
-     */
-    public SpringDocConfiguration(@Value("${springdoc.simple-types:}") final Set<Class<?>> simpleTypes) {
-        simpleTypes.forEach(c -> SpringDocUtils.getConfig()
-                .addSimpleTypesForParameterObject(c)
-                .removeRequestWrapperToIgnore(c));
-    }
 
     /**
      * Creates {@link OpenAPI} based on {@link Components}, {@link ExternalDocumentation}, and {@link Info} beans
@@ -257,6 +242,24 @@ public class SpringDocConfiguration {
                         .forEach(r -> errorApiResponses.forEach(r::addApiResponse));
             }
         };
+    }
+
+    /**
+     * This bean contains a 3PL-sadness workaround. If certain types (like {@link java.util.Locale}) are in
+     * documented classes, this SpringDoc library error out with a {@code java.lang.StackOverflowError: null}. 3PL
+     * documentation does not show a way to configure a way out of this error. Only statically accessing the lists
+     * of ignored types can work around the failure.
+     * <li>[Optional] {@code springdoc.simple-types=java.util.Locale,java.time.ZoneId}</li>
+     *
+     * @param simpleTypes List of full-class-path to the classes to be added as "simple types"
+     */
+    @ConditionalOnProperty("springdoc.simple-types")
+    @Bean
+    public OpenApiCustomizer simpleTypesCustomizer(@Value("${springdoc.simple-types}") final Set<Class<?>> simpleTypes) {
+        simpleTypes.forEach(c -> SpringDocUtils.getConfig()
+                .addSimpleTypesForParameterObject(c)
+                .removeRequestWrapperToIgnore(c));
+        return openApi -> {};
     }
 
     /**

@@ -1,4 +1,4 @@
-package org.watson.demos.configurations;
+package org.watson.demos.autoconfigure;
 
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
@@ -40,23 +40,23 @@ import java.util.stream.IntStream;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.watson.demos.configurations.SpringDocConfiguration.SPRING_DOC_PREFIX_CONTACT;
-import static org.watson.demos.configurations.SpringDocConfiguration.SPRING_DOC_PREFIX_EXTERNAL_DOCUMENTATION;
-import static org.watson.demos.configurations.SpringDocConfiguration.SPRING_DOC_PREFIX_INFO;
-import static org.watson.demos.configurations.SpringDocConfiguration.SPRING_DOC_PREFIX_LICENSE;
-import static org.watson.demos.configurations.SpringDocConfigurationTest.BuildPropertiesTestConfiguration;
-import static org.watson.demos.configurations.SpringDocConfigurationTest.CONTACT_EMAIL;
-import static org.watson.demos.configurations.SpringDocConfigurationTest.CONTACT_NAME;
-import static org.watson.demos.configurations.SpringDocConfigurationTest.CONTACT_URL;
-import static org.watson.demos.configurations.SpringDocConfigurationTest.ERROR_SCHEMA_NAME;
-import static org.watson.demos.configurations.SpringDocConfigurationTest.EXTERNAL_DOC_DESC;
-import static org.watson.demos.configurations.SpringDocConfigurationTest.EXTERNAL_DOC_URL;
-import static org.watson.demos.configurations.SpringDocConfigurationTest.LICENSE_NAME;
-import static org.watson.demos.configurations.SpringDocConfigurationTest.LICENSE_URL;
-import static org.watson.demos.configurations.SpringDocConfigurationTest.SHARED_ERRORS_STRING;
-import static org.watson.demos.configurations.SpringDocConfigurationTest.TERM_OF_SERVICE;
+import static org.watson.demos.autoconfigure.SpringDocAutoConfiguration.SPRING_DOC_PREFIX_CONTACT;
+import static org.watson.demos.autoconfigure.SpringDocAutoConfiguration.SPRING_DOC_PREFIX_EXTERNAL_DOCUMENTATION;
+import static org.watson.demos.autoconfigure.SpringDocAutoConfiguration.SPRING_DOC_PREFIX_INFO;
+import static org.watson.demos.autoconfigure.SpringDocAutoConfiguration.SPRING_DOC_PREFIX_LICENSE;
+import static org.watson.demos.autoconfigure.SpringDocAutoConfigurationTest.BuildPropertiesTestConfiguration;
+import static org.watson.demos.autoconfigure.SpringDocAutoConfigurationTest.CONTACT_EMAIL;
+import static org.watson.demos.autoconfigure.SpringDocAutoConfigurationTest.CONTACT_NAME;
+import static org.watson.demos.autoconfigure.SpringDocAutoConfigurationTest.CONTACT_URL;
+import static org.watson.demos.autoconfigure.SpringDocAutoConfigurationTest.ERROR_SCHEMA_NAME;
+import static org.watson.demos.autoconfigure.SpringDocAutoConfigurationTest.EXTERNAL_DOC_DESC;
+import static org.watson.demos.autoconfigure.SpringDocAutoConfigurationTest.EXTERNAL_DOC_URL;
+import static org.watson.demos.autoconfigure.SpringDocAutoConfigurationTest.LICENSE_NAME;
+import static org.watson.demos.autoconfigure.SpringDocAutoConfigurationTest.LICENSE_URL;
+import static org.watson.demos.autoconfigure.SpringDocAutoConfigurationTest.SHARED_ERRORS_STRING;
+import static org.watson.demos.autoconfigure.SpringDocAutoConfigurationTest.TERM_OF_SERVICE;
 
-@SpringBootTest(classes = SpringDocConfiguration.class, properties = {
+@SpringBootTest(classes = SpringDocAutoConfiguration.class, properties = {
         SPRING_DOC_PREFIX_CONTACT + ".email=" + CONTACT_EMAIL,
         SPRING_DOC_PREFIX_CONTACT + ".name=" + CONTACT_NAME,
         SPRING_DOC_PREFIX_CONTACT + ".url=" + CONTACT_URL,
@@ -67,11 +67,11 @@ import static org.watson.demos.configurations.SpringDocConfigurationTest.TERM_OF
         SPRING_DOC_PREFIX_INFO + ".terms-of-service=" + TERM_OF_SERVICE,
         "springdoc.shared-errors=" + SHARED_ERRORS_STRING,
         "springdoc.error.schema-name=" + ERROR_SCHEMA_NAME,
-        "springdoc.use-array-schema=org.watson.demos.configurations.SpringDocConfigurationTest.TestArrayType",
+        "springdoc.use-array-schema=org.watson.demos.autoconfigure.SpringDocAutoConfigurationTest.TestArrayType",
 })
 @EnableConfigurationProperties
-@ContextConfiguration(classes = {BuildPropertiesTestConfiguration.class, SpringDocConfiguration.class})
-class SpringDocConfigurationTest {
+@ContextConfiguration(classes = {BuildPropertiesTestConfiguration.class, SpringDocAutoConfiguration.class})
+class SpringDocAutoConfigurationTest {
     static final String CONTACT_EMAIL = "test@test.com";
     static final String CONTACT_NAME = "A Contact";
     static final String CONTACT_URL = "https://contact.info";
@@ -90,7 +90,7 @@ class SpringDocConfigurationTest {
     private static final String VERSION = "A Version";
 
     private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-            .withUserConfiguration(SpringDocConfiguration.class);
+            .withUserConfiguration(SpringDocAutoConfiguration.class);
 
     @Resource
     private OpenAPI openAPI;

@@ -1,4 +1,4 @@
-package org.watson.demos.configurations;
+package org.watson.demos.autoconfigure;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -15,10 +15,10 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class EventRepositoryConfigurationTest {
+class EventRepositoryAutoConfigurationTest {
 
     private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-            .withUserConfiguration(EventRepositoryConfiguration.class);
+            .withUserConfiguration(EventRepositoryAutoConfiguration.class);
 
     @ValueSource(strings = {"auditEventRepository", "httpExchangeRepository"})
     @ParameterizedTest

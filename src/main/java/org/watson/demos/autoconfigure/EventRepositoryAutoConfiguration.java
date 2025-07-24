@@ -1,20 +1,20 @@
-package org.watson.demos.configurations;
+package org.watson.demos.autoconfigure;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
 import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.Optional;
 
-@Configuration(proxyBeanMethods = false)
-public class EventRepositoryConfiguration {
+@AutoConfiguration
+public class EventRepositoryAutoConfiguration {
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "management.auditevents", name = {"enabled", "repository.enabled"}, matchIfMissing = true)
     @Bean
